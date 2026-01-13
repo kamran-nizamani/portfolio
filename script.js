@@ -176,4 +176,47 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     initGame();
+
+    // Scroll Animations (IntersectionObserver)
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in-up');
+                observer.unobserve(entry.target); // Animate only once
+            }
+        });
+    }, observerOptions);
+
+    // Elements to animate
+    const animateElements = document.querySelectorAll('.project-card, .skill-category, .cert-card, .section-title-glow, .hero-content, .about-content, .contact-wrapper');
+    animateElements.forEach(el => {
+        el.style.opacity = '0'; // Hide initially for animation
+        observer.observe(el);
+    });
+
+    // Contact Form Handling
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Simulate form submission
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.textContent;
+            
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert('Message sent successfully! (This is a demo)');
+                contactForm.reset();
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }, 1500);
+        });
+    }
 });
