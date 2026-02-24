@@ -155,6 +155,17 @@ header {
     cursor: pointer;
     font-size: 1.5rem;
     color: var(--accent-color);
+    background: none;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.hamburger.toggle {
+    color: var(--white);
+}
+
+.hamburger:focus {
+    outline: none;
 }
 
 /* Sections Common */
@@ -709,16 +720,7 @@ header {
     background: rgba(10, 25, 47, 1);
 }
 
-@media (max-width: 768px) {
-    .contact-wrapper {
-        flex-direction: column;
-        gap: 3rem;
-    }
-    
-    .form-group {
-        flex-direction: column;
-    }
-}
+
 
 /* Footer */
 footer {
@@ -730,18 +732,72 @@ footer {
     font-size: 0.9rem;
 }
 
-/* Responsive */
+/* Responsive - Mobile First Approach */
+
+/* Tablet and below */
+@media (max-width: 1024px) {
+    .container {
+        max-width: 90%;
+    }
+
+    .navbar {
+        padding: 0 1.5rem;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+    }
+
+    .hero-desc {
+        font-size: 1rem;
+    }
+
+    .hero-buttons {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .section {
+        padding: 5rem 2rem;
+    }
+
+    .projects-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .skills-categories {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .numbers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Large Tablets and below (768px) */
 @media (max-width: 768px) {
+    /* Navigation */
     .nav-links {
         display: none;
         flex-direction: column;
-        position: absolute;
+        position: fixed;
         top: 80px;
         right: 0;
-        background: var(--light-bg);
+        left: 0;
+        background: rgba(10, 25, 47, 0.98);
         width: 100%;
+        height: calc(100vh - 80px);
         padding: 2rem;
         text-align: center;
+        overflow-y: auto;
+        z-index: 999;
     }
 
     .nav-links.active {
@@ -752,8 +808,28 @@ footer {
         margin: 1.5rem 0;
     }
 
+    .nav-links a {
+        font-size: 1rem;
+    }
+
     .hamburger {
         display: block;
+        font-size: 1.8rem;
+    }
+
+    .btn-resume {
+        margin-left: 0;
+        margin-top: 1.5rem;
+    }
+
+    /* Hero Section */
+    .section {
+        padding: 3rem 1.5rem;
+    }
+
+    .hero {
+        min-height: auto;
+        padding-top: 100px;
     }
 
     .hero-container {
@@ -761,20 +837,320 @@ footer {
         text-align: center;
     }
 
-    .hero h1 {
-        font-size: 3rem;
-    }
-
     .hero-content {
         margin-top: 2rem;
+        max-width: 100%;
     }
-    
+
+    .hero h1 {
+        font-size: 2.5rem;
+        line-height: 1.2;
+    }
+
+    .hero-intro {
+        font-size: 0.9rem;
+    }
+
+    .hero-roles {
+        font-size: 1rem;
+    }
+
+    .hero-desc {
+        font-size: 1rem;
+        max-width: 100%;
+    }
+
     .hero-buttons {
         justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.85rem;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .hero-image {
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+
+    .img-wrapper {
+        width: 280px;
+        height: 280px;
+    }
+
+    /* Bio Box */
+    .bio-box {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .bio-box p {
+        font-size: 1rem;
+    }
+
+    /* Numbers Grid */
+    .numbers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .number-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .number-card h3 {
+        font-size: 2rem;
+    }
+
+    .number-card p {
+        font-size: 0.8rem;
+    }
+
+    /* Skills */
+    .skills-categories {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .skill-category {
+        padding: 1.5rem;
+    }
+
+    .skill-category h3 {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Projects */
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .secret-project-card {
+        grid-column: 1 !important;
+    }
+
+    .project-card {
+        padding: 1.5rem;
+    }
+
+    /* Section titles */
+    .section-title-glow,
+    .section-title-center {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.95rem;
+        margin-top: -1.5rem;
+    }
+
+    /* Contact Form */
+    .contact-wrapper {
+        flex-direction: column !important;
+        gap: 2rem;
+    }
+
+    .form-group {
+        flex-direction: column !important;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    /* Wave Display */
+    .wave-display-container {
+        height: 200px;
+        margin-bottom: 1.5rem;
+    }
+
+    .controls-container {
+        gap: 0.8rem;
+    }
+
+    .control-group {
+        padding: 0.8rem;
+    }
+
+    /* Reveal Content */
+    .reveal-content {
+        padding: 1.5rem;
+    }
+
+    .reveal-icon-wrapper {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .reveal-title {
+        font-size: 1.5rem;
+    }
+
+    .reveal-desc {
+        font-size: 1rem;
+    }
+
+    /* Certifications */
+    .cert-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* Small Phones (480px and below) */
+@media (max-width: 480px) {
+    header {
+        height: 70px;
+    }
+
+    .navbar {
+        padding: 0 1rem;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+
+    .hamburger {
+        font-size: 1.5rem;
     }
 
     .section {
-        padding: 4rem 1.5rem;
+        padding: 2rem 1rem;
+    }
+
+    .hero {
+        padding-top: 80px;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-intro {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-roles {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-desc {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.8rem;
+        width: 100%;
+    }
+
+    .img-wrapper {
+        width: 200px;
+        height: 200px;
+    }
+
+    .bio-box {
+        padding: 1rem;
+    }
+
+    .bio-box p {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .numbers-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .number-card {
+        padding: 1rem 0.8rem;
+    }
+
+    .number-card h3 {
+        font-size: 1.8rem;
+    }
+
+    .number-card p {
+        font-size: 0.75rem;
+    }
+
+    .section-title-glow,
+    .section-title-center {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.9rem;
+        margin-top: -1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .skill-category h3 {
+        font-size: 0.85rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .skill-items {
+        gap: 0.8rem;
+    }
+
+    .skill-name {
+        font-size: 0.95rem;
+    }
+
+    .project-card {
+        padding: 1rem;
+    }
+
+    .reveal-icon-wrapper {
+        font-size: 2.5rem;
+    }
+
+    .reveal-title {
+        font-size: 1.3rem;
+    }
+
+    .reveal-desc {
+        font-size: 0.9rem;
+    }
+
+    .reveal-tag {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-lock-again {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .wave-display-container {
+        height: 150px;
+    }
+
+    .control-label {
+        font-size: 0.8rem;
     }
 }
 
