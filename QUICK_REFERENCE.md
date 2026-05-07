@@ -140,6 +140,7 @@ const { ref, isVisible } = useScrollReveal(0.1);
 ```
 
 ### useMousePosition
+{% raw %}
 ```tsx
 const mousePos = useMousePosition();
 
@@ -147,6 +148,7 @@ const mousePos = useMousePosition();
   background: `radial-gradient(circle at ${mousePos.x}px ${mousePos.y}px, ...)`
 }} />
 ```
+{% endraw %}
 
 ### useSmoothScroll
 ```tsx
