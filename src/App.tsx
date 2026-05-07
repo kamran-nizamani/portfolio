@@ -663,18 +663,18 @@ export default function App() {
       <main className="relative z-10 pt-20">
         {/* ===== HERO SECTION ===== */}
         <section id="home" className="min-h-screen flex flex-col justify-center px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 py-24 sm:py-28 md:py-32 relative">
-          {/* Two-column layout: text (left) + image (right) */}
-          <div className="flex flex-col md:flex-row items-center md:items-center gap-6 sm:gap-8 md:gap-12 lg:gap-16 max-w-7xl mx-auto w-full">
+          {/* Two-column layout: image (left) + text (right) */}
+          <div className="flex flex-col md:flex-row-reverse items-center md:items-center gap-6 sm:gap-8 md:gap-12 lg:gap-16 max-w-7xl mx-auto w-full">
             
-            {/* LEFT COLUMN: Text Content */}
+            {/* RIGHT COLUMN: Text Content */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="flex-1 text-left"
+              className="flex-1 text-right md:text-left"
             >
               {/* Small label */}
-              <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8 uppercase">
+              <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8 uppercase flex-row-reverse md:flex-row">
                 <span className="mono-label text-brand font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[9px] sm:text-xs">
                   Advanced Intelligence Active
                 </span>
@@ -746,12 +746,12 @@ export default function App() {
               </div>
             </motion.div>
 
-            {/* RIGHT COLUMN: Profile Image */}
+            {/* LEFT COLUMN: Profile Image */}
             <motion.div
-              initial={{ opacity: 0, x: 30, scale: 0.9 }}
+              initial={{ opacity: 0, x: -30, scale: 0.9 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="flex-1 flex justify-center md:justify-end items-center w-full md:w-auto"
+              className="flex-1 flex justify-center md:justify-start items-center w-full md:w-auto"
             >
               {/* Neon glowing container */}
               <div className="relative group">
