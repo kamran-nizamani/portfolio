@@ -194,25 +194,100 @@
  * Enhanced mobile experience and responsive behavior
  */
 
-/* Improve readability on small screens */
-@media (max-width: 640px) {
-  h1 { @apply text-3xl; }
-  h2 { @apply text-2xl; }
-  h3 { @apply text-xl; }
+/* Mobile-first responsive typography */
+@media (max-width: 320px) {
+  body { font-size: 13px; }
+  h1 { @apply text-2xl; }
+  h2 { @apply text-xl; }
+  h3 { @apply text-lg; }
 }
 
-/* Tablet optimizations */
+/* Small phone optimization (320px - 480px) */
+@media (min-width: 320px) and (max-width: 480px) {
+  h1 { @apply text-3xl; }
+  h2 { @apply text-2xl; }
+  h3 { @apply text-lg; }
+  .mono-label { @apply text-[8px] tracking-wider; }
+}
+
+/* Phone optimization (480px - 640px) */
+@media (min-width: 480px) {
+  body { font-size: 14px; }
+  h1 { @apply text-3xl sm:text-4xl; }
+  h2 { @apply text-2xl sm:text-3xl; }
+}
+
+/* Tablet optimizations (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
   body {
     font-size: 15px;
   }
+  h1 { @apply text-5xl md:text-6xl; }
+  h2 { @apply text-4xl md:text-5xl; }
 }
 
-/* Desktop optimizations */
+/* Desktop optimizations (1024px+) */
 @media (min-width: 1024px) {
   body {
     font-size: 16px;
   }
+  h1 { @apply text-6xl lg:text-7xl; }
+  h2 { @apply text-5xl lg:text-6xl; }
+}
+
+/* Large desktop (1440px+) */
+@media (min-width: 1440px) {
+  body {
+    font-size: 17px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase tap target sizes for touch */
+  button, a, input, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover effects on touch devices */
+  .hover\:scale-110:hover {
+    @apply hover:scale-100;
+  }
+  
+  /* Improve spacing for touch */
+  .gap-3 { @apply gap-4 md:gap-3; }
+  .gap-4 { @apply gap-5 md:gap-4; }
+}
+
+/* Very small screens - hide some non-essential elements */
+@media (max-width: 380px) {
+  .hidden-xs { @apply hidden; }
+}
+
+/* Small screens - optimize spacing */
+@media (max-width: 640px) {
+  .px-6 { @apply px-4; }
+  .py-6 { @apply py-4; }
+  .gap-8 { @apply gap-4 md:gap-8; }
+  
+  /* Optimize card padding on mobile */
+  .glass-panel { @apply p-4 sm:p-6 md:p-8; }
+  
+  /* Stack layouts on mobile */
+  .flex-col\.md\:flex-row { @apply flex-col; }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  section { @apply py-8 md:py-12; }
+  h1 { @apply text-3xl md:text-4xl; }
+}
+
+/* Improve readability on small screens */
+@media (max-width: 640px) {
+  .break-words { word-break: break-word; }
+  .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
 /*

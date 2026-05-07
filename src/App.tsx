@@ -45,6 +45,9 @@ import {
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
+// Import assets
+import profileImage from '../public/portfilo-pic.jpeg';
+
 // Import data constants
 import {
   PROFILE,
@@ -659,9 +662,9 @@ export default function App() {
 
       <main className="relative z-10 pt-20">
         {/* ===== HERO SECTION ===== */}
-        <section id="home" className="min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-24 py-32 md:py-20 relative">
+        <section id="home" className="min-h-screen flex flex-col justify-center px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 py-24 sm:py-28 md:py-32 relative">
           {/* Two-column layout: text (left) + image (right) */}
-          <div className="flex flex-col md:flex-row items-center md:items-center gap-8 md:gap-12 lg:gap-16 max-w-7xl mx-auto w-full">
+          <div className="flex flex-col md:flex-row items-center md:items-center gap-6 sm:gap-8 md:gap-12 lg:gap-16 max-w-7xl mx-auto w-full">
             
             {/* LEFT COLUMN: Text Content */}
             <motion.div
@@ -671,43 +674,43 @@ export default function App() {
               className="flex-1 text-left"
             >
               {/* Small label */}
-              <div className="flex items-center gap-3 mb-8 uppercase">
-                <span className="mono-label text-brand font-bold tracking-[0.2em] sm:tracking-[0.3em] text-[10px] sm:text-xs">
+              <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8 uppercase">
+                <span className="mono-label text-brand font-bold tracking-[0.15em] sm:tracking-[0.2em] text-[9px] sm:text-xs">
                   Advanced Intelligence Active
                 </span>
                 <div className="w-8 h-[1px] bg-brand/50 hidden sm:block" />
               </div>
 
               {/* Main heading */}
-              <h2 className="text-base sm:text-lg md:text-xl font-bold mb-4 opacity-70">
+              <h2 className="text-sm sm:text-base md:text-lg font-bold mb-3 sm:mb-4 opacity-70">
                 Greetings, I'm
               </h2>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.9] mb-8 md:mb-10 tracking-tighter">
+              <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.9] mb-6 sm:mb-8 md:mb-10 tracking-tighter">
                 <span className="text-glow-blue block break-words">KAMRAN</span>
                 <span className="text-outline block opacity-50 break-words">KHAN</span>
               </h1>
 
               {/* Role badges */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-3 text-brand font-mono text-xs sm:text-sm mb-8 md:mb-10">
-                <div className="px-3 py-1 border border-brand/20 bg-brand/5 rounded-md whitespace-nowrap">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-brand font-mono text-[11px] sm:text-xs md:text-sm mb-6 sm:mb-8 md:mb-10">
+                <div className="px-2.5 sm:px-3 py-1 border border-brand/20 bg-brand/5 rounded-md whitespace-nowrap text-[10px] sm:text-xs">
                   Data Analyst
                 </div>
-                <div className="px-3 py-1 border border-brand/20 bg-brand/5 rounded-md whitespace-nowrap">
+                <div className="px-2.5 sm:px-3 py-1 border border-brand/20 bg-brand/5 rounded-md whitespace-nowrap text-[10px] sm:text-xs">
                   Web Developer
                 </div>
-                <div className="px-3 py-1 border border-brand/20 bg-brand/5 rounded-md whitespace-nowrap">
+                <div className="px-2.5 sm:px-3 py-1 border border-brand/20 bg-brand/5 rounded-md whitespace-nowrap text-[10px] sm:text-xs">
                   AI Enthusiast
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-base sm:text-lg md:text-lg text-gray-400 max-w-xl mb-10 md:mb-12 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-gray-400 max-w-xl mb-8 sm:mb-10 md:mb-12 leading-relaxed">
                 Computer Science student at <span className="text-brand">Sukkur IBA University</span> focused on web development,
                 data analysis, and emotional intelligence in AI.
               </p>
 
               {/* CTA buttons */}
-              <div className="flex flex-wrap gap-4 sm:gap-6 items-start">
+              <div className="flex flex-col xs:flex-row flex-wrap gap-3 sm:gap-4 md:gap-6 items-start">
                 <Button
                   href="#projects"
                   size="lg"
@@ -732,12 +735,12 @@ export default function App() {
               </div>
 
               {/* Certificates Badge */}
-              <div className="mt-10 flex flex-wrap gap-3 items-center">
-                <div className="flex items-center gap-2 px-4 py-2 bg-brand/5 border border-brand/20 rounded-lg">
-                  <Shield className="w-4 h-4 text-brand" />
-                  <span className="text-xs font-mono text-brand uppercase tracking-wider">6 Certifications</span>
+              <div className="mt-8 sm:mt-10 flex flex-col xs:flex-row flex-wrap gap-2 sm:gap-3 items-start xs:items-center">
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-brand/5 border border-brand/20 rounded-lg">
+                  <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-brand flex-shrink-0" />
+                  <span className="text-[10px] sm:text-xs font-mono text-brand uppercase tracking-wider whitespace-nowrap">6 Certifications</span>
                 </div>
-                <div className="text-xs text-gray-400 font-mono">
+                <div className="text-[10px] sm:text-xs text-gray-400 font-mono hidden xs:block">
                   Google • Meta • DeepLearning.AI • Coursera
                 </div>
               </div>
@@ -760,9 +763,10 @@ export default function App() {
                   boxShadow: '0 0 30px rgba(0, 242, 255, 0.3), inset 0 0 20px rgba(0, 242, 255, 0.1)'
                 }}>
                   <img
-                    src="/portfilo pic.jpeg"
+                    src={profileImage}
                     alt="Kamran Khan"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -821,10 +825,10 @@ export default function App() {
         </section>
 
         {/* ===== TECH STACK SECTION ===== */}
-        <section className="py-16 sm:py-20 md:py-24 border-y border-border bg-white/[0.01]">
-          <div className="px-6 md:px-24">
-            <div className="mono-label mb-8 sm:mb-12 text-center opacity-50">Enterprise Tech Stack</div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-8">
+        <section className="py-12 sm:py-16 md:py-20 lg:py-24 border-y border-border bg-white/[0.01]">
+          <div className="px-4 sm:px-6 md:px-12 lg:px-24">
+            <div className="mono-label mb-6 sm:mb-8 md:mb-12 text-center opacity-50 text-[9px] sm:text-[10px]">Enterprise Tech Stack</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
               {[
                 { name: "Neural Networks", icon: Brain },
                 { name: "Fullstack Web", icon: Code },
@@ -922,16 +926,16 @@ export default function App() {
         </section>
 
         {/* ===== SKILLS SECTION ===== */}
-        <section id="skills" className="py-20 md:py-40 px-6 md:px-24 bg-white/[0.02] border-y border-white/5">
+        <section id="skills" className="py-16 sm:py-24 md:py-40 px-4 sm:px-6 md:px-12 lg:px-24 bg-white/[0.02] border-y border-white/5">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-12 md:mb-16 gap-8 text-center md:text-left">
-              <div>
-                <div className="mono-label !text-brand mb-4">Protocol Capabilities</div>
-                <h2 className="text-3xl sm:text-5xl md:text-6xl font-black italic uppercase break-words">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 sm:mb-12 md:mb-16 gap-6 sm:gap-8 text-center md:text-left">
+              <div className="w-full md:w-auto">
+                <div className="mono-label !text-brand mb-3 sm:mb-4 text-[9px] sm:text-[10px]">Protocol Capabilities</div>
+                <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black italic uppercase break-words">
                   Technical <span className="text-brand">Arsenal</span>
                 </h2>
               </div>
-              <div className="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-4">
+              <div className="flex flex-wrap justify-center md:justify-end gap-2 sm:gap-3 w-full md:w-auto">
                 {["All", ...new Set(SKILLS.map(s => s.category))].map((cat) => (
                   <button
                     key={cat}
@@ -949,7 +953,7 @@ export default function App() {
             </div>
 
             {/* Skills grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-12 md:gap-y-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 gap-y-10 md:gap-y-16">
               {SKILLS.filter(s => activeSkillCat === "All" || s.category === activeSkillCat).map(
                 (skill, i) => (
                   <SkillBar
@@ -1050,24 +1054,24 @@ export default function App() {
         </section>
 
         {/* ===== PROJECTS SECTION ===== */}
-        <section id="projects" className="py-20 md:py-32 px-6 md:px-24 border-t border-white/5">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-24 gap-8">
-            <div>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-8 h-[1px] bg-brand hidden sm:block" />
-                <span className="mono-label !text-brand">Security Lab & Archives</span>
+        <section id="projects" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 md:px-12 lg:px-24 border-t border-white/5">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 sm:mb-16 md:mb-24 gap-6 sm:gap-8">
+            <div className="w-full">
+              <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                <div className="w-6 sm:w-8 h-[1px] bg-brand hidden sm:block" />
+                <span className="mono-label !text-brand text-[9px] sm:text-[10px]">Security Lab & Archives</span>
               </div>
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold italic tracking-tighter break-words">
+              <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold italic tracking-tighter break-words">
                 Selected <span className="text-brand">Artifacts</span>
               </h2>
             </div>
-            <p className="text-gray-500 font-mono text-xs sm:text-sm max-w-xs flex-shrink-0">
+            <p className="text-gray-500 font-mono text-[9px] sm:text-xs md:text-sm max-w-xs flex-shrink-0 hidden sm:block">
               A collection of secure systems and AI research explorations.
             </p>
           </div>
 
           {/* Projects grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
             {PROJECTS.map((project, i) => (
               <ProjectCard
                 key={i}
@@ -1123,58 +1127,58 @@ export default function App() {
         </section>
 
         {/* ===== CONTACT SECTION ===== */}
-        <section id="contact" className="py-16 md:py-32 px-6 md:px-24">
-          <div className="glass-panel rounded-2xl md:rounded-[3rem] p-8 md:p-16 lg:p-24 overflow-hidden neon-border scanline">
+        <section id="contact" className="py-12 sm:py-20 md:py-32 px-4 sm:px-6 md:px-12 lg:px-24">
+          <div className="glass-panel rounded-2xl md:rounded-3xl lg:rounded-[3rem] p-6 sm:p-8 md:p-12 lg:p-16 xl:p-24 overflow-hidden neon-border scanline">
             <div className="absolute top-0 right-0 w-96 h-96 bg-brand/5 blur-[100px] pointer-events-none" />
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 lg:gap-24">
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-24">
               {/* Left side - Text and contact info */}
               <div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-8 h-[1px] bg-brand" />
-                  <span className="mono-label !text-brand">Secure Link Terminal</span>
+                <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <div className="w-6 sm:w-8 h-[1px] bg-brand" />
+                  <span className="mono-label !text-brand text-[9px] sm:text-[10px]">Secure Link Terminal</span>
                 </div>
-                <h2 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 md:mb-8 leading-tight break-words">
+                <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 md:mb-8 leading-tight break-words">
                   Let's build the <span className="text-brand italic">future</span>.
                 </h2>
-                <p className="text-base sm:text-lg text-gray-400 mb-8 md:mb-12 max-w-md">
+                <p className="text-sm sm:text-base md:text-lg text-gray-400 mb-6 sm:mb-8 md:mb-12 max-w-md">
                   Currently available for high-level AI research and architectural consultations.
                 </p>
 
                 {/* Contact methods */}
-                <div className="space-y-8">
-                  <a href={`mailto:${PROFILE.email}`} className="flex items-center gap-4 sm:gap-6 group">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-white/10 flex items-center justify-center group-hover:bg-brand transition-all group-hover:neon-border flex-shrink-0">
-                      <Mail className="w-5 h-5 sm:w-6 sm:h-6 group-hover:text-bg transition-colors" />
+                <div className="space-y-6 sm:space-y-8">
+                  <a href={`mailto:${PROFILE.email}`} className="flex items-center gap-3 sm:gap-4 md:gap-6 group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl border border-white/10 flex items-center justify-center group-hover:bg-brand transition-all group-hover:neon-border flex-shrink-0">
+                      <Mail className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 group-hover:text-bg transition-colors" />
                     </div>
-                    <div>
-                      <div className="text-[10px] uppercase text-brand font-mono tracking-widest mb-1">
+                    <div className="min-w-0">
+                      <div className="text-[9px] sm:text-[10px] uppercase text-brand font-mono tracking-widest mb-0.5 sm:mb-1">
                         Email Endpoint
                       </div>
-                      <div className="text-base sm:text-lg font-bold group-hover:text-brand transition-colors break-all">
+                      <div className="text-sm sm:text-base md:text-lg font-bold group-hover:text-brand transition-colors break-all">
                         {PROFILE.email}
                       </div>
                     </div>
                   </a>
-                  <div className="flex items-center gap-4 sm:gap-6">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-white/10 flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-brand" />
+                  <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl border border-white/10 flex items-center justify-center flex-shrink-0">
+                      <Phone className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-brand" />
                     </div>
-                    <div>
-                      <div className="text-[10px] uppercase text-gray-500 font-mono tracking-widest mb-1">
+                    <div className="min-w-0">
+                      <div className="text-[9px] sm:text-[10px] uppercase text-gray-500 font-mono tracking-widest mb-0.5 sm:mb-1">
                         Direct Voice Line
                       </div>
-                      <div className="text-base sm:text-lg font-bold">{PROFILE.phone}</div>
+                      <div className="text-sm sm:text-base md:text-lg font-bold">{PROFILE.phone}</div>
                     </div>
                   </div>
-                  <a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 sm:gap-6 group">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-white/10 flex items-center justify-center group-hover:bg-brand transition-all group-hover:neon-border flex-shrink-0">
-                      <Linkedin className="w-5 h-5 sm:w-6 sm:h-6 group-hover:text-bg transition-colors" />
+                  <a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 md:gap-6 group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl border border-white/10 flex items-center justify-center group-hover:bg-brand transition-all group-hover:neon-border flex-shrink-0">
+                      <Linkedin className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 group-hover:text-bg transition-colors" />
                     </div>
-                    <div>
-                      <div className="text-[10px] uppercase text-brand font-mono tracking-widest mb-1">
+                    <div className="min-w-0">
+                      <div className="text-[9px] sm:text-[10px] uppercase text-brand font-mono tracking-widest mb-0.5 sm:mb-1">
                         Professional Network
                       </div>
-                      <div className="text-base sm:text-lg font-bold group-hover:text-brand transition-colors">
+                      <div className="text-sm sm:text-base md:text-lg font-bold group-hover:text-brand transition-colors truncate">
                         linkedin.com/in/kamran-khan
                       </div>
                     </div>
@@ -1183,20 +1187,20 @@ export default function App() {
               </div>
 
               {/* Right side - Contact form */}
-              <div className="space-y-6 md:space-y-8 bg-white/5 p-6 md:p-8 lg:p-12 rounded-3xl border border-white/10 glass-panel">
+              <div className="space-y-5 sm:space-y-6 md:space-y-8 bg-white/5 p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 rounded-2xl sm:rounded-3xl border border-white/10 glass-panel">
                 {/* Name field */}
-                <div className="space-y-3">
-                  <label className="mono-label !text-gray-500">Identity</label>
+                <div className="space-y-2 sm:space-y-3">
+                  <label className="mono-label !text-gray-500 text-[9px] sm:text-[10px]">Identity</label>
                   <input
                     type="text"
                     placeholder="GUEST_USER"
-                    className="w-full bg-bg border border-white/10 rounded-xl px-4 py-3 sm:py-4 focus:border-brand/50 outline-none transition-colors font-mono text-sm"
+                    className="w-full bg-bg border border-white/10 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 md:py-4 focus:border-brand/50 outline-none transition-colors font-mono text-xs sm:text-sm"
                   />
                 </div>
 
                 {/* Email field */}
-                <div className="space-y-3">
-                  <label className="mono-label !text-gray-500">Frequency</label>
+                <div className="space-y-2 sm:space-y-3">
+                  <label className="mono-label !text-gray-500 text-[9px] sm:text-[10px]">Frequency</label>
                   <input
                     type="email"
                     placeholder="USER@DOMAIN.COM"
