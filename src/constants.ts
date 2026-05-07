@@ -35,39 +35,27 @@ export const RESEARCH = {
 
 export const PROJECTS = [
   {
-    title: "PromptBank",
-    description: "A comprehensive AI prompt repository and management system. Organize, categorize, and share optimized prompts for ChatGPT, Claude, and other AI models. Features prompt versioning, rating system, and collaborative community.",
-    tags: ["React", "AI", "Prompts", "Community"],
-    link: "https://github.com/kamran-nizamani/PromptBank"
-  },
-  {
-    title: "Freelancer App",
-    description: "A modern freelancing platform connecting clients with skilled professionals. Features project posting, bidding system, secure payments, and real-time messaging. Built with full-stack capabilities.",
-    tags: ["Full-Stack", "React", "Node.js", "Database"],
-    link: "#"
-  },
-  {
-    title: "Smart Student Assistant App",
-    description: "An intelligent AI-powered educational companion providing personalized learning assistance, homework help, study scheduling, and exam preparation. Uses NLP for context-aware responses.",
-    tags: ["AI", "Education", "NLP", "React Native"],
-    link: "#"
-  },
-  {
     title: "Smart Exam Prep",
-    description: "A comprehensive student preparation platform designed to optimize learning outcomes through structured resources and adaptive learning paths.",
+    description: "A comprehensive student preparation platform designed to optimize learning outcomes through structured resources.",
     tags: ["Education", "Platform"],
     link: "#"
   },
   {
+    title: "Prepioneer",
+    description: "A live web-based preparation app providing real-time interactive learning experiences.",
+    tags: ["React", "Live App"],
+    link: "#"
+  },
+  {
     title: "AI Crop Disease Detection",
-    description: "Machine learning based system that identifies crop diseases through image analysis, aiding in modern agriculture and sustainable farming.",
-    tags: ["Computer Vision", "TensorFlow", "Agriculture"],
+    description: "Machine learning based system that identifies crop diseases through image analysis, aiding in modern agriculture.",
+    tags: ["Computer Vision", "TensorFlow"],
     link: "#"
   },
   {
     title: "Next.js Boilerplate",
-    description: "A scalable, production-ready project structure for modern web applications with built-in best practices and optimizations.",
-    tags: ["Next.js", "TypeScript", "Architecture"],
+    description: "A scalable, production-ready project structure for modern web applications.",
+    tags: ["Next.js", "Architecture"],
     link: "https://github.com/kamran-nizamani"
   }
 ];
