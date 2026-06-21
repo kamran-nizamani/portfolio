@@ -1,11 +1,6 @@
-/**
- * Certification Card Component
- * Displays certification details with verify link and hover animations
- */
-
 import React from 'react';
 import { motion } from 'motion/react';
-import { Shield, ExternalLink } from 'lucide-react';
+import { Award, ArrowUpRight } from 'lucide-react';
 
 interface CertificationCardProps {
   title: string;
@@ -17,68 +12,48 @@ interface CertificationCardProps {
   delay?: number;
 }
 
-/**
- * CertificationCard - Renders credential card with verification link
- * Features: Smooth animations, responsive layout, hover effects
- */
 export const CertificationCard: React.FC<CertificationCardProps> = ({
   title,
   issuer,
   date,
   category,
-  verifyUrl = '#',
+  verifyUrl,
   grade,
-  delay = 0
+  delay = 0,
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ delay }}
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="glass-panel p-6 sm:p-8 rounded-3xl group cursor-pointer hover:-translate-y-2 transition-all duration-500"
+      transition={{ duration: 0.4, delay }}
+      className="panel panel-hover p-6 flex flex-col h-full"
     >
-      {/* Header with icon and date */}
-      <div className="flex justify-between items-start mb-8 sm:mb-12">
-        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand/10 flex items-center justify-center flex-shrink-0">
-          <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-brand group-hover:animate-pulse" />
+      <div className="flex items-start justify-between mb-6">
+        <div className="w-9 h-9 rounded-lg bg-surface-2 border border-border flex items-center justify-center">
+          <Award className="w-4 h-4 text-accent" aria-hidden="true" />
         </div>
-        <span className="text-[9px] sm:text-[10px] font-mono text-gray-600 uppercase tracking-tighter whitespace-nowrap ml-2">
-          {date}
-        </span>
+        <span className="text-xs font-mono text-zinc-500">{date}</span>
       </div>
 
-      {/* Issuer */}
-      <div className="font-mono text-[10px] text-brand/40 mb-2 uppercase tracking-widest">
-        {issuer}
-      </div>
+      <div className="text-xs font-mono text-zinc-500 uppercase tracking-wide mb-2">{issuer}</div>
+      <h3 className="text-base font-semibold text-zinc-100 mb-4 leading-snug flex-1">{title}</h3>
 
-      {/* Certification title */}
-      <h3 className="text-lg sm:text-2xl font-bold text-white mb-4 sm:mb-6 group-hover:text-brand transition-colors line-clamp-3 leading-tight">
-        {title}
-      </h3>
-
-      {/* Divider and footer */}
-      <div className="flex items-center justify-between pt-4 sm:pt-6 border-t border-white/5">
-        <div className="flex flex-col gap-2">
-          <span className="text-[9px] font-mono text-gray-500 uppercase">
-            {category}
-          </span>
-          {grade && (
-            <span className="text-[8px] font-mono text-brand/60 uppercase tracking-widest">
-              Grade: {grade}
-            </span>
-          )}
+      <div className="flex items-center justify-between pt-4 border-t border-border">
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-zinc-500">{category}</span>
+          {grade && <span className="text-xs text-accent">Grade: {grade}</span>}
         </div>
-        <a
-          href={verifyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-[9px] font-mono text-gray-500 group-hover:text-brand transition-colors uppercase"
-        >
-          <span>Verify</span>
-          <ExternalLink className="w-3 h-3" />
-        </a>
+        {verifyUrl && verifyUrl !== '#' && (
+          <a
+            href={verifyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-100 transition-colors"
+          >
+            Verify <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
+          </a>
+        )}
       </div>
     </motion.div>
   );

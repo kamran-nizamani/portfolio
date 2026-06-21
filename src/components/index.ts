@@ -1,12 +1,11 @@
-/**
- * Component Exports
- * Central export point for all reusable components
- */
-
-export { default as Card } from './Card';
 export { default as Button } from './Button';
 export { default as SectionHeading } from './SectionHeading';
-export { default as ProjectCard } from './ProjectCard';
-export { default as SkillBar } from './SkillBar';
+export { default as ProjectCaseStudy } from './ProjectCaseStudy';
+export { default as SkillsGrid } from './SkillsGrid';
+export { default as Timeline } from './Timeline';
 export { default as CertificationCard } from './CertificationCard';
-export { default as ExperienceItem } from './ExperienceItem';
+export { default as Nav } from './Nav';
+export { default as Hero } from './Hero';
+export { default as About } from './About';
+export { default as Contact } from './Contact';
+export { default as Footer } from './Footer';
