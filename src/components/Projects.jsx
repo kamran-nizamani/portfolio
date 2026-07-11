@@ -2,6 +2,35 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Icon } from '@iconify/react'
 
+function ProjectThumb({ project }) {
+  const [imgOk, setImgOk] = useState(true)
+
+  if (imgOk && project.image) {
+    return (
+      <img
+        src={project.image}
+        alt=""
+        loading="lazy"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        onError={() => setImgOk(false)}
+      />
+    )
+  }
+
+  return (
+    <div className={`w-full h-full bg-gradient-to-br ${project.bg} flex items-center justify-center`}>
+      <Icon
+        icon={project.icon}
+        className={`absolute text-[120px] ${project.iconColor} group-hover:scale-110 group-hover:opacity-40 transition-all duration-700 pointer-events-none`}
+        aria-hidden="true"
+      />
+      <div className="absolute bottom-4 right-4 opacity-40 pointer-events-none">
+        <Icon icon={project.accentIcon} className={`text-3xl ${project.accentColor}`} aria-hidden="true" />
+      </div>
+    </div>
+  )
+}
+
 const FILTERS = [
   { id: 'all',       label: 'All'       },
   { id: 'fullstack', label: 'Full-Stack' },
@@ -17,13 +46,20 @@ const PROJECTS = [
     badgeColor: 'text-brand',
     title: 'Smart Exam Prep',
     description: 'Exam preparation platform with automated scheduling and topic-prioritization engine.',
+    features: [
+      'Adaptive scheduling engine ranks topics by weakness',
+      'Progress dashboard with per-subject analytics',
+      'Role-based access for students & instructors',
+    ],
     tags: ['React', 'MySQL', 'Node.js'],
     icon: 'lucide:graduation-cap',
+    image: '/projects/1.jpg',
     bg: 'from-blue-950 via-indigo-950 to-slate-950',
     iconColor: 'text-blue-400/25',
     accentIcon: 'lucide:calendar-check',
     accentColor: 'text-blue-300',
     github: 'https://github.com/kamran-nizamani',
+    featured: false,
   },
   {
     id: 2,
@@ -32,14 +68,21 @@ const PROJECTS = [
     badgeColor: 'text-cyan-400',
     title: 'Prepioneer',
     description: 'Production-grade learning platform with CI/CD via Vercel and iterated UI/UX.',
+    features: [
+      'Automated CI/CD pipeline with zero-downtime deploys',
+      'Iterated UI/UX driven by real user session data',
+      'Optimized for sub-1s Lighthouse performance scores',
+    ],
     tags: ['React', 'Vercel', 'CI/CD'],
     icon: 'lucide:rocket',
+    image: '/projects/2.jpg',
     bg: 'from-violet-950 via-purple-950 to-slate-950',
     iconColor: 'text-violet-400/25',
     accentIcon: 'lucide:external-link',
     accentColor: 'text-violet-300',
     github: 'https://github.com/kamran-nizamani',
     live: 'https://kamrandev.me',
+    featured: true,
   },
   {
     id: 3,
@@ -48,13 +91,20 @@ const PROJECTS = [
     badgeColor: 'text-green-400',
     title: 'AI Crop Disease Detection',
     description: 'CNN trained on 10,000+ leaf images with a lightweight inference API for real-world deployment.',
+    features: [
+      'CNN model trained on 10,000+ labeled leaf images',
+      'Lightweight REST inference API for mobile/edge use',
+      '94%+ classification accuracy across 12 disease classes',
+    ],
     tags: ['TensorFlow', 'CNN', 'Python'],
     icon: 'lucide:brain',
+    image: '/projects/3.jpg',
     bg: 'from-emerald-950 via-green-950 to-slate-950',
     iconColor: 'text-emerald-400/25',
     accentIcon: 'lucide:leaf',
     accentColor: 'text-emerald-300',
     github: 'https://github.com/kamran-nizamani',
+    featured: true,
   },
   {
     id: 4,
@@ -63,13 +113,20 @@ const PROJECTS = [
     badgeColor: 'text-purple-400',
     title: 'Next.js Boilerplate',
     description: 'Production-ready starter with ESLint, Prettier, modular structure, and best practices.',
+    features: [
+      'Pre-configured ESLint + Prettier + Husky hooks',
+      'Modular folder structure ready to scale',
+      'Dark-mode-first Tailwind design system',
+    ],
     tags: ['Next.js', 'ESLint', 'Prettier'],
     icon: 'lucide:code-2',
+    image: '/projects/4.jpg',
     bg: 'from-slate-900 via-zinc-900 to-slate-950',
     iconColor: 'text-slate-400/15',
     accentIcon: 'lucide:package',
     accentColor: 'text-purple-300',
     github: 'https://github.com/kamran-nizamani',
+    featured: false,
   },
   {
     id: 5,
@@ -78,13 +135,20 @@ const PROJECTS = [
     badgeColor: 'text-yellow-400',
     title: 'PromptBank',
     description: 'Centralized AI prompt management system with tagging, search, and team collaboration.',
+    features: [
+      'Full-text search & tagging across saved prompts',
+      'Real-time team collaboration with shared workspaces',
+      'REST API for programmatic prompt retrieval',
+    ],
     tags: ['React', 'Node.js', 'REST API'],
     icon: 'lucide:sparkles',
+    image: '/projects/5.jpg',
     bg: 'from-amber-950 via-orange-950 to-slate-950',
     iconColor: 'text-amber-400/25',
     accentIcon: 'lucide:message-square',
     accentColor: 'text-amber-300',
     github: 'https://github.com/kamran-nizamani',
+    featured: false,
   },
 ]
 
@@ -139,7 +203,7 @@ export default function Projects() {
             exiting cards into position:absolute, which needs a positioned
             parent or they render relative to a distant ancestor and overlap
             the remaining cards during filter transitions. */}
-        <div className="relative grid md:grid-cols-2 lg:grid-cols-3 gap-7">
+        <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
           <AnimatePresence mode="popLayout">
             {filtered.map((p, i) => (
               <motion.article
@@ -150,19 +214,26 @@ export default function Projects() {
                 exit={{ opacity: 0, scale: 0.92, y: 10 }}
                 transition={{ duration: 0.45, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -6 }}
-                className="gradient-border card rounded-xl overflow-hidden group"
+                className={`gradient-border card rounded-xl overflow-hidden group relative ${
+                  p.featured ? 'ring-1 ring-brand/40' : ''
+                }`}
+                style={p.featured ? { boxShadow: '0 0 40px rgba(6,182,212,0.12)' } : {}}
                 aria-label={p.title}
               >
-                {/* Thumbnail */}
-                <div className={`relative h-48 overflow-hidden bg-gradient-to-br ${p.bg} flex items-center justify-center`}>
-                  <Icon
-                    icon={p.icon}
-                    className={`absolute text-[120px] ${p.iconColor} group-hover:scale-110 group-hover:opacity-40 transition-all duration-700 pointer-events-none`}
-                    aria-hidden="true"
-                  />
-                  <div className="absolute bottom-4 right-4 opacity-40 pointer-events-none">
-                    <Icon icon={p.accentIcon} className={`text-3xl ${p.accentColor}`} aria-hidden="true" />
+                {/* Featured ribbon */}
+                {p.featured && (
+                  <div
+                    className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-full px-3 py-1"
+                    style={{ background: 'rgba(6,182,212,0.16)', border: '1px solid rgba(6,182,212,0.35)', backdropFilter: 'blur(6px)' }}
+                  >
+                    <Icon icon="lucide:star" className="text-brand text-[11px]" aria-hidden="true" />
+                    <span className="font-mono text-[9px] text-brand tracking-wider">FEATURED</span>
                   </div>
+                )}
+
+                {/* Thumbnail */}
+                <div className="relative h-48 overflow-hidden">
+                  <ProjectThumb project={p} />
                   {/* Overlay */}
                   <div className="absolute inset-0 pointer-events-none"
                     style={{ background: 'linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.5) 50%, transparent 100%)' }} />
@@ -179,6 +250,17 @@ export default function Projects() {
                     {p.title}
                   </h3>
                   <p className="text-slate-500 text-sm font-light leading-relaxed mb-4">{p.description}</p>
+
+                  {p.features?.length > 0 && (
+                    <ul className="space-y-1.5 mb-5">
+                      {p.features.map(f => (
+                        <li key={f} className="flex items-start gap-2 text-xs text-slate-400 leading-snug">
+                          <Icon icon="lucide:check" className="text-brand mt-0.5 flex-shrink-0 text-[11px]" aria-hidden="true" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
 
                   <div className="flex flex-wrap gap-2 mb-5">
                     {p.tags.map(t => <span key={t} className="tag">{t}</span>)}

@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import Lenis from 'lenis'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -12,8 +13,20 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import ScrollProgress from './components/ScrollProgress'
 import ScrollToTop from './components/ScrollToTop'
+import LoadingScreen from './components/LoadingScreen'
+
+const LOADER_KEY = 'kk-loaded'
 
 export default function App() {
+  const [showLoader, setShowLoader] = useState(
+    () => typeof window !== 'undefined' && !sessionStorage.getItem(LOADER_KEY)
+  )
+
+  const handleLoaderComplete = useCallback(() => {
+    sessionStorage.setItem(LOADER_KEY, '1')
+    setShowLoader(false)
+  }, [])
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -30,6 +43,9 @@ export default function App() {
 
   return (
     <>
+      <AnimatePresence>
+        {showLoader && <LoadingScreen onComplete={handleLoaderComplete} />}
+      </AnimatePresence>
       <ScrollProgress />
       <Navbar />
       <main>

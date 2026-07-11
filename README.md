@@ -29,6 +29,8 @@
 
 ## Features
 
+- **Premium Loading Screen** — ~15s animated boot sequence (logo, particle field, progress bar, terminal status lines) on first visit per session, with a skip button and `prefers-reduced-motion` support
+- **3D Flip Certification Cards** — Click/tap to flip completed certs and reveal completion date + skills learned
 - **3D WebGL Hero** — Torus knot, icosahedron, and 1 200-particle star field powered by Three.js with interactive mouse parallax
 - **Circular Profile Image** — Animated conic-gradient border ring, glassmorphism frame, cyan glow, float + mouse-tilt effect
 - **Typewriter Effect** — 5 cycling roles via a custom `useTypewriter` hook
@@ -97,24 +99,27 @@ npm run preview     # preview the production build locally
 ```
 portfolio/
 ├── public/
-│   └── profile.jpg          # Profile photo
+│   ├── profile.jpg          # Profile photo
+│   ├── projects/            # Drop project screenshots here: 1.jpg … 5.jpg
+│   └── certs/               # Drop certificate images here: c1.jpg … c4.jpg
 ├── src/
 │   ├── components/
+│   │   ├── LoadingScreen.jsx # ~15s animated boot sequence (first visit/session)
 │   │   ├── Navbar.jsx        # Fixed nav with animated underline pill
 │   │   ├── Hero.jsx          # 3D canvas + circular profile + typewriter
 │   │   ├── About.jsx         # Bio, 3D shapes canvas, animated stats
 │   │   ├── Research.jsx      # Research paper cards
-│   │   ├── Projects.jsx      # Filterable project grid
+│   │   ├── Projects.jsx      # Filterable project grid w/ images + features
 │   │   ├── Skills.jsx        # Skill glow cards + toolkit + certs
 │   │   ├── Education.jsx     # Timeline layout
-│   │   ├── Certifications.jsx# Filterable certs + progress bars + timeline
-│   │   ├── Contact.jsx       # Contact form + social links
+│   │   ├── Certifications.jsx# 3D flip cards + progress bars + timeline
+│   │   ├── Contact.jsx       # WhatsApp CTA + contact form + social links
 │   │   ├── Footer.jsx
 │   │   ├── ScrollProgress.jsx
 │   │   └── ScrollToTop.jsx
 │   ├── hooks/
 │   │   └── useTypewriter.js  # Custom typewriter hook
-│   ├── App.jsx               # Root layout + Lenis init
+│   ├── App.jsx               # Root layout + Lenis init + loader gating
 │   ├── main.jsx
 │   └── index.css             # Global styles, glassmorphism, animations
 ├── index.html
@@ -124,6 +129,16 @@ portfolio/
 ├── package.json
 └── README.md
 ```
+
+### Adding real project/certificate images
+
+Project and certificate cards render clean placeholder art out of the box.
+To use real images, just drop files into these paths — they're picked up
+automatically with no code changes (broken/missing files fall back to the
+placeholder art):
+
+- `public/projects/1.jpg` … `public/projects/5.jpg` — project screenshots
+- `public/certs/c1.jpg` … `public/certs/c4.jpg` — certificate images
 
 ---
 

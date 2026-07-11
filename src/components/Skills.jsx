@@ -49,7 +49,7 @@ export default function Skills() {
           </motion.h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
 
           {/* Skill cards (replacing progress bars) */}
           <motion.div

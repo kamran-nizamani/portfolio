@@ -2,6 +2,10 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Icon } from '@iconify/react'
 
+const WHATSAPP_NUMBER = '923258313573'
+const WHATSAPP_MESSAGE = "Hi Kamran, I found your portfolio and would like to discuss a project."
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
+
 const INFO = [
   { icon: 'lucide:mail',    label: 'EMAIL',    value: 'kamrannizamani35@gmail.com', href: 'mailto:kamrannizamani35@gmail.com' },
   { icon: 'lucide:phone',   label: 'PHONE',    value: '+92 325 8313573',            href: 'tel:+923258313573'                 },
@@ -9,10 +13,11 @@ const INFO = [
 ]
 
 const SOCIALS = [
-  { icon: 'lucide:github', href: 'https://github.com/kamran-nizamani',      label: 'GitHub'   },
-  { icon: 'mdi:linkedin',  href: 'https://linkedin.com/in/kamran-nizamani', label: 'LinkedIn' },
-  { icon: 'lucide:globe',  href: 'https://kamrandev.me',                    label: 'Website'  },
-  { icon: 'lucide:mail',   href: 'mailto:kamrannizamani35@gmail.com',        label: 'Email'    },
+  { icon: 'lucide:github',        href: 'https://github.com/kamran-nizamani',      label: 'GitHub'   },
+  { icon: 'mdi:linkedin',         href: 'https://linkedin.com/in/kamran-nizamani', label: 'LinkedIn' },
+  { icon: 'lucide:globe',         href: 'https://kamrandev.me',                    label: 'Website'  },
+  { icon: 'lucide:mail',          href: 'mailto:kamrannizamani35@gmail.com',        label: 'Email'    },
+  { icon: 'logos:whatsapp-icon',  href: WHATSAPP_URL,                              label: 'WhatsApp' },
 ]
 
 const fadeUp = (delay = 0) => ({
@@ -48,7 +53,7 @@ export default function Contact() {
           </motion.p>
         </div>
 
-        <div className="grid md:grid-cols-5 gap-6 md:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10">
 
           {/* Info */}
           <motion.div
@@ -58,6 +63,33 @@ export default function Contact() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="md:col-span-2 space-y-4"
           >
+            {/* WhatsApp CTA */}
+            <motion.a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ y: -3, boxShadow: '0 12px 32px rgba(34,197,94,0.22)' }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center gap-4 rounded-xl p-5"
+              style={{
+                background: 'linear-gradient(135deg, rgba(34,197,94,0.12), rgba(15,23,42,0.5))',
+                border: '1px solid rgba(34,197,94,0.25)',
+              }}
+              aria-label="Chat on WhatsApp"
+            >
+              <div
+                className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ background: 'rgba(34,197,94,0.15)' }}
+              >
+                <Icon icon="logos:whatsapp-icon" className="text-2xl" aria-hidden="true" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-mono text-[10px] text-green-400 tracking-widest mb-0.5">CHAT NOW</p>
+                <p className="text-sm text-white font-medium">Message me on WhatsApp</p>
+              </div>
+              <Icon icon="lucide:arrow-up-right" className="text-green-400 text-lg flex-shrink-0" aria-hidden="true" />
+            </motion.a>
+
             {INFO.map(({ icon, label, value, href }) => {
               const Wrapper = href ? 'a' : 'div'
               return (
@@ -104,7 +136,7 @@ export default function Contact() {
             className="md:col-span-3"
           >
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-5" aria-label="Contact form" noValidate>
-              <div className="grid sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label htmlFor="name" className="font-mono text-xs text-slate-500 tracking-widest block mb-2">NAME</label>
                   <input

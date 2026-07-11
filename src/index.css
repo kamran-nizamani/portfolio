@@ -295,3 +295,27 @@
     0 0 160px rgba(0,229,255,0.06);
   pointer-events: none;
 }
+
+/* ── 3D flip card (Certifications) ── */
+.flip-card-scene {
+  perspective: 1600px;
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.flip-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+.flip-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-card-face--back {
+  transform: rotateY(180deg);
+}

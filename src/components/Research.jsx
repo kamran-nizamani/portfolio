@@ -62,7 +62,7 @@ export default function Research() {
         </div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {PAPERS.map((p, i) => (
             <motion.article
               key={p.id}

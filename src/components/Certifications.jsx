@@ -14,6 +14,9 @@ const COMPLETED = [
     icon: 'logos:google',
     accent: '#06B6D4',
     year: '2024',
+    completionDate: 'June 2024',
+    skills: ['Prompt Engineering', 'Data Cleaning', 'AI-Assisted Analysis', 'Spreadsheets'],
+    image: '/certs/c1.jpg',
     url: null,
   },
   {
@@ -25,6 +28,9 @@ const COMPLETED = [
     icon: 'simple-icons:coursera',
     accent: '#0056D3',
     year: '2024',
+    completionDate: 'April 2024',
+    skills: ['Statistics', 'Data Visualization', 'Python', 'SQL'],
+    image: '/certs/c2.jpg',
     url: null,
   },
   {
@@ -36,6 +42,9 @@ const COMPLETED = [
     icon: 'logos:google',
     accent: '#818cf8',
     year: '2024',
+    completionDate: 'February 2024',
+    skills: ['Security Frameworks', 'Threat Landscape', 'Network Security', 'Linux'],
+    image: '/certs/c3.jpg',
     url: null,
   },
   {
@@ -47,6 +56,9 @@ const COMPLETED = [
     icon: 'logos:google',
     accent: '#818cf8',
     year: '2024',
+    completionDate: 'March 2024',
+    skills: ['Risk Management', 'SIEM Tools', 'Incident Response', 'Security Controls'],
+    image: '/certs/c4.jpg',
     url: null,
   },
 ]
@@ -206,76 +218,139 @@ function AnimatedNumber({ target, active }) {
   )
 }
 
-// ─── CompletedCard ────────────────────────────────────────────────────────────
+// ─── CompletedCard (3D flip card) ──────────────────────────────────────────────
 
 function CompletedCard({ cert, delay }) {
+  const [flipped, setFlipped] = useState(false)
+  const [imgOk, setImgOk] = useState(true)
+
   return (
     <motion.div
       {...fadeUp(delay)}
-      whileHover={{ y: -6, boxShadow: `0 16px 40px ${cert.accent}18` }}
-      className="gradient-border card rounded-xl p-5 flex flex-col gap-4 h-full transition-all duration-300 relative overflow-hidden"
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
+      className="flip-card-scene h-[300px]"
     >
-      {/* Subtle top accent glow */}
       <div
-        className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: `linear-gradient(to right, transparent, ${cert.accent}60, transparent)` }}
-        aria-hidden="true"
-      />
-
-      {/* Header row */}
-      <div className="flex items-start justify-between gap-2">
-        <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: `${cert.accent}18`, border: `1px solid ${cert.accent}28` }}
-        >
-          <Icon icon={cert.icon} className="text-base" aria-hidden="true" />
-        </div>
-        <div
-          className="flex items-center gap-1.5 rounded-full px-2.5 py-1 flex-shrink-0"
-          style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}
-        >
-          <motion.div
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
-          >
-            <Icon icon="lucide:check-circle" className="text-green-400 text-[11px]" aria-hidden="true" />
-          </motion.div>
-          <span className="font-mono text-[9px] text-green-400 tracking-wider">DONE</span>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 space-y-1.5">
-        <h3 className="text-sm font-semibold text-white leading-snug">{cert.title}</h3>
-        <p className="font-mono text-[10px] text-slate-500 tracking-wide">{cert.platform}</p>
-        <div className="flex items-center gap-1.5 pt-0.5">
-          <span
-            className="font-mono text-[9px] px-2 py-0.5 rounded-full"
-            style={{ background: `${cert.accent}14`, color: cert.accent, border: `1px solid ${cert.accent}20` }}
-          >
-            {cert.provider}
-          </span>
-          <span className="font-mono text-[9px] text-slate-700">{cert.year}</span>
-        </div>
-      </div>
-
-      {/* CTA */}
-      <motion.a
-        href={cert.url ?? '#'}
-        target={cert.url ? '_blank' : undefined}
-        rel="noopener noreferrer"
-        whileHover={{ x: 3 }}
-        onClick={e => { if (!cert.url) e.preventDefault() }}
-        className="inline-flex items-center gap-1.5 text-[11px] font-medium text-brand hover:text-brand-light transition-colors group mt-auto"
-        aria-label={`View ${cert.title} certificate`}
+        className={`flip-card-inner ${flipped ? 'is-flipped' : ''}`}
+        onClick={() => setFlipped(f => !f)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped(f => !f) } }}
+        aria-label={`${cert.title} certificate — press to flip`}
+        aria-pressed={flipped}
       >
-        <Icon icon="lucide:external-link" className="text-xs" />
-        View Certificate
-        <Icon
-          icon="lucide:arrow-right"
-          className="text-[10px] group-hover:translate-x-0.5 transition-transform"
-        />
-      </motion.a>
+        {/* ── Front face: certificate preview ── */}
+        <div
+          className="flip-card-face gradient-border card rounded-xl overflow-hidden flex flex-col cursor-pointer"
+          style={{ boxShadow: `0 16px 40px ${cert.accent}18` }}
+        >
+          {/* Preview art */}
+          <div className="relative h-[150px] flex-shrink-0 overflow-hidden">
+            {imgOk && (
+              <img
+                src={cert.image}
+                alt=""
+                loading="lazy"
+                className="w-full h-full object-cover"
+                onError={() => setImgOk(false)}
+              />
+            )}
+            {!imgOk && (
+              <div
+                className="w-full h-full flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${cert.accent}22, rgba(15,23,42,0.9))` }}
+              >
+                <Icon icon={cert.icon} className="text-5xl opacity-70" aria-hidden="true" />
+              </div>
+            )}
+            <div
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(to top, rgba(15,23,42,0.9) 0%, transparent 55%)' }}
+              aria-hidden="true"
+            />
+            <div
+              className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full px-2.5 py-1"
+              style={{ background: 'rgba(34,197,94,0.14)', border: '1px solid rgba(34,197,94,0.25)' }}
+            >
+              <Icon icon="lucide:check-circle" className="text-green-400 text-[11px]" aria-hidden="true" />
+              <span className="font-mono text-[9px] text-green-400 tracking-wider">DONE</span>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 p-4 flex flex-col gap-1.5">
+            <h3 className="text-sm font-semibold text-white leading-snug">{cert.title}</h3>
+            <p className="font-mono text-[10px] text-slate-500 tracking-wide">{cert.platform}</p>
+            <div className="flex items-center gap-1.5 mt-auto pt-2">
+              <span
+                className="font-mono text-[9px] px-2 py-0.5 rounded-full"
+                style={{ background: `${cert.accent}14`, color: cert.accent, border: `1px solid ${cert.accent}20` }}
+              >
+                {cert.provider}
+              </span>
+              <span className="font-mono text-[9px] text-slate-700 ml-auto flex items-center gap-1">
+                <Icon icon="lucide:rotate-3d" className="text-[10px]" aria-hidden="true" />
+                flip
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Back face: details ── */}
+        <div
+          className="flip-card-face flip-card-face--back gradient-border card rounded-xl p-5 flex flex-col gap-3 cursor-pointer"
+          style={{ boxShadow: `0 16px 40px ${cert.accent}18` }}
+        >
+          <div className="flex items-start justify-between gap-2">
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: `${cert.accent}18`, border: `1px solid ${cert.accent}28` }}
+            >
+              <Icon icon={cert.icon} className="text-base" aria-hidden="true" />
+            </div>
+            <Icon icon="lucide:x" className="text-slate-600 text-sm mt-1" aria-hidden="true" />
+          </div>
+
+          <h3 className="text-sm font-semibold text-white leading-snug">{cert.title}</h3>
+
+          <div className="flex items-center gap-1.5 font-mono text-[10px] text-slate-500">
+            <Icon icon="lucide:calendar-check" className="text-xs" style={{ color: cert.accent }} aria-hidden="true" />
+            Completed {cert.completionDate}
+          </div>
+
+          <div className="flex-1 min-h-0">
+            <p className="font-mono text-[9px] text-slate-600 tracking-widest uppercase mb-2">Skills Learned</p>
+            <div className="flex flex-wrap gap-1.5">
+              {cert.skills.map(skill => (
+                <span
+                  key={skill}
+                  className="font-mono text-[9px] px-2 py-1 rounded-full"
+                  style={{ background: `${cert.accent}12`, color: cert.accent, border: `1px solid ${cert.accent}22` }}
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <motion.a
+            href={cert.url ?? '#'}
+            target={cert.url ? '_blank' : undefined}
+            rel="noopener noreferrer"
+            whileHover={{ x: 3 }}
+            onClick={e => { e.stopPropagation(); if (!cert.url) e.preventDefault() }}
+            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-brand hover:text-brand-light transition-colors group mt-auto"
+            aria-label={`View ${cert.title} certificate`}
+          >
+            <Icon icon="lucide:external-link" className="text-xs" />
+            View Certificate
+            <Icon
+              icon="lucide:arrow-right"
+              className="text-[10px] group-hover:translate-x-0.5 transition-transform"
+            />
+          </motion.a>
+        </div>
+      </div>
     </motion.div>
   )
 }
