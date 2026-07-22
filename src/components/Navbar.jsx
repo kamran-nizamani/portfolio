@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react'
 const LINKS = [
   { href: 'about',           label: 'About' },
   { href: 'research',        label: 'Research' },
+  { href: 'open-source',     label: 'Open Source' },
   { href: 'projects',        label: 'Projects' },
   { href: 'skills',          label: 'Skills' },
   { href: 'education',       label: 'Education' },

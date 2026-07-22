@@ -22,10 +22,10 @@ const COMPLETED = [
   {
     id: 'c2',
     title: 'Foundations of Data Science',
-    provider: 'Coursera',
-    platform: 'Coursera',
+    provider: 'Google',
+    platform: 'Google Career Certificates',
     tags: ['google'],
-    icon: 'simple-icons:coursera',
+    icon: 'logos:google',
     accent: '#0056D3',
     year: '2024',
     completionDate: 'April 2024',

@@ -19,14 +19,19 @@ const TOOLS = [
   { icon: 'logos:mysql',       label: 'MySQL'      },
   { icon: 'logos:git-icon',    label: 'Git'        },
   { icon: 'logos:linux-tux',   label: 'Linux'      },
+  { icon: 'logos:docker-icon', label: 'Docker'     },
+  { icon: 'logos:aws',         label: 'AWS'        },
+  { icon: 'logos:github-actions', label: 'GitHub Actions' },
+  { icon: 'logos:vercel-icon', label: 'Vercel'     },
+  { icon: 'logos:mongodb-icon', label: 'MongoDB'   },
+  { icon: 'logos:postgresql',  label: 'PostgreSQL' },
 ]
 
 const CERTS = [
-  'Advanced Data Analysis & Visualization',
-  'Web Development Bootcamp',
-  'Cybersecurity & Ethical Hacking',
-  'TensorFlow & Deep Learning',
-  'Machine Learning Foundations',
+  'AI for Data Analysis — Google Career Certificates',
+  'Foundations of Data Science — Google Career Certificates',
+  'Foundations of Cybersecurity — Google Cybersecurity Certificate',
+  'Play It Safe: Manage Security Risks — Google Cybersecurity Certificate',
 ]
 
 const fadeUp = (delay = 0) => ({

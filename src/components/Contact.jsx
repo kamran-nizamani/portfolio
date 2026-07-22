@@ -33,8 +33,18 @@ export default function Contact() {
 
   const handleSubmit = e => {
     e.preventDefault()
+    const form = formRef.current
+    const name = form.name.value
+    const email = form.email.value
+    const subject = form.subject.value
+    const message = form.message.value
+
+    const body = `${message}\n\n— ${name} (${email})`
+    const mailtoUrl = `mailto:kamrannizamani35@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    window.location.href = mailtoUrl
+
     setStatus('sent')
-    formRef.current?.reset()
+    form.reset()
     setTimeout(() => setStatus(null), 4500)
   }
 
@@ -140,7 +150,7 @@ export default function Contact() {
                 <div>
                   <label htmlFor="name" className="font-mono text-xs text-slate-500 tracking-widest block mb-2">NAME</label>
                   <input
-                    id="name" type="text" required placeholder="Your name"
+                    id="name" name="name" type="text" required placeholder="Your name"
                     className="w-full rounded-xl px-4 py-3.5 text-sm transition-colors"
                     aria-required="true"
                   />
@@ -148,7 +158,7 @@ export default function Contact() {
                 <div>
                   <label htmlFor="email" className="font-mono text-xs text-slate-500 tracking-widest block mb-2">EMAIL</label>
                   <input
-                    id="email" type="email" required placeholder="your@email.com"
+                    id="email" name="email" type="email" required placeholder="your@email.com"
                     className="w-full rounded-xl px-4 py-3.5 text-sm transition-colors"
                     aria-required="true"
                   />
@@ -157,7 +167,7 @@ export default function Contact() {
               <div>
                 <label htmlFor="subject" className="font-mono text-xs text-slate-500 tracking-widest block mb-2">SUBJECT</label>
                 <input
-                  id="subject" type="text" required placeholder="Project / Research / Opportunity"
+                  id="subject" name="subject" type="text" required placeholder="Project / Research / Opportunity"
                   className="w-full rounded-xl px-4 py-3.5 text-sm transition-colors"
                   aria-required="true"
                 />
@@ -165,7 +175,7 @@ export default function Contact() {
               <div>
                 <label htmlFor="message" className="font-mono text-xs text-slate-500 tracking-widest block mb-2">MESSAGE</label>
                 <textarea
-                  id="message" rows={5} required placeholder="Tell me about your idea..."
+                  id="message" name="message" rows={5} required placeholder="Tell me about your idea..."
                   className="w-full rounded-xl px-4 py-3.5 text-sm resize-none transition-colors"
                   aria-required="true"
                 />
@@ -194,7 +204,7 @@ export default function Contact() {
                   aria-live="polite"
                 >
                   <Icon icon="lucide:check-circle" className="text-green-400 text-xl flex-shrink-0" aria-hidden="true" />
-                  <span className="text-sm text-slate-300">Message sent! I'll get back to you soon, InshaAllah.</span>
+                  <span className="text-sm text-slate-300">Opening your email client to send this — I'll get back to you soon, InshaAllah.</span>
                 </motion.div>
               )}
             </AnimatePresence>

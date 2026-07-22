@@ -282,6 +282,23 @@ export default function Hero() {
               <span className="font-mono text-[10px] sm:text-xs text-slate-400 tracking-wider">OPEN TO OPPORTUNITIES</span>
             </motion.div>
 
+            {/* Availability badges */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6, ease: [0.16,1,0.3,1] }}
+              className="mb-7 flex flex-wrap justify-center lg:justify-start gap-2 -mt-3"
+            >
+              {['Internships', 'Freelance Projects', 'Remote-Ready'].map(label => (
+                <span
+                  key={label}
+                  className="glass rounded-full px-3.5 py-1.5 font-mono text-[10px] sm:text-[11px] text-slate-400 tracking-wide"
+                >
+                  {label}
+                </span>
+              ))}
+            </motion.div>
+
             {/* Greeting + Name */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -350,7 +367,8 @@ export default function Hero() {
               <motion.a
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                href="#"
+                href="/Kamran-Khan-Resume.pdf"
+                download
                 className="btn-ghost w-full sm:w-auto"
                 aria-label="Download Resume"
               >

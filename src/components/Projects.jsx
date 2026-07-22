@@ -58,7 +58,7 @@ const PROJECTS = [
     iconColor: 'text-blue-400/25',
     accentIcon: 'lucide:calendar-check',
     accentColor: 'text-blue-300',
-    github: 'https://github.com/kamran-nizamani',
+    github: 'https://github.com/kamran-nizamani/Smart_Exam_Prep',
     featured: false,
   },
   {
@@ -80,7 +80,7 @@ const PROJECTS = [
     iconColor: 'text-violet-400/25',
     accentIcon: 'lucide:external-link',
     accentColor: 'text-violet-300',
-    github: 'https://github.com/kamran-nizamani',
+    github: 'https://github.com/kamran-nizamani/prepioneer-demo',
     live: 'https://kamrandev.me',
     featured: true,
   },
@@ -147,7 +147,7 @@ const PROJECTS = [
     iconColor: 'text-amber-400/25',
     accentIcon: 'lucide:message-square',
     accentColor: 'text-amber-300',
-    github: 'https://github.com/kamran-nizamani',
+    github: 'https://github.com/kamran-nizamani/PromptBank',
     featured: false,
   },
 ]
