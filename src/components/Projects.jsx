@@ -18,10 +18,10 @@ function ProjectThumb({ project }) {
   }
 
   return (
-    <div className={`w-full h-full bg-gradient-to-br ${project.bg} flex items-center justify-center`}>
+    <div className={`relative w-full h-full bg-gradient-to-br ${project.bg} flex items-center justify-center`}>
       <Icon
         icon={project.icon}
-        className={`absolute text-[120px] ${project.iconColor} group-hover:scale-110 group-hover:opacity-40 transition-all duration-700 pointer-events-none`}
+        className={`text-[120px] ${project.iconColor} group-hover:scale-110 group-hover:opacity-40 transition-all duration-700 pointer-events-none`}
         aria-hidden="true"
       />
       <div className="absolute bottom-4 right-4 opacity-40 pointer-events-none">
@@ -149,6 +149,49 @@ const PROJECTS = [
     accentColor: 'text-amber-300',
     github: 'https://github.com/kamran-nizamani/PromptBank',
     featured: false,
+  },
+  {
+    id: 6,
+    category: 'tools',
+    badge: 'DEV TOOL',
+    badgeColor: 'text-teal-400',
+    title: 'World Clock',
+    description: 'Responsive multi-timezone clock with digital & analog views, search, and persistent local storage.',
+    features: [
+      '34+ timezones with live digital & analog displays',
+      'Search, add & persist timezones via localStorage',
+      'One-click copy-to-clipboard for any selected time',
+    ],
+    tags: ['JavaScript', 'HTML5', 'CSS3'],
+    icon: 'lucide:globe',
+    bg: 'from-sky-950 via-cyan-950 to-slate-950',
+    iconColor: 'text-sky-400/25',
+    accentIcon: 'lucide:clock-4',
+    accentColor: 'text-sky-300',
+    github: 'https://github.com/kamran-nizamani/world-clock',
+    featured: false,
+  },
+  {
+    id: 7,
+    category: 'fullstack',
+    badge: 'LIVE APP',
+    badgeColor: 'text-cyan-400',
+    title: 'AutoBugFix (BugFlow AI)',
+    description: 'AI bug-detection & project-management platform with Kanban triage, OWASP-style code scanning, and Gemini-powered diagnostics.',
+    features: [
+      'AI-powered bug triage with severity & root-cause classification',
+      'Kanban issue board across triage → diagnostics → QA → resolved',
+      'AI code scanner, sprint planner, and multi-tenant org/team roles',
+    ],
+    tags: ['React', 'Express', 'Gemini AI'],
+    icon: 'lucide:bug',
+    bg: 'from-rose-950 via-red-950 to-slate-950',
+    iconColor: 'text-rose-400/25',
+    accentIcon: 'lucide:sparkles',
+    accentColor: 'text-rose-300',
+    github: 'https://github.com/kamran-nizamani/AutoBugFix',
+    live: 'https://auto-bug-fix-one.vercel.app',
+    featured: true,
   },
 ]
 

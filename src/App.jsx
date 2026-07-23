@@ -6,6 +6,7 @@ import Hero from './components/Hero'
 import About from './components/About'
 import Research from './components/Research'
 import OpenSource from './components/OpenSource'
+import GitHubStats from './components/GitHubStats'
 import Projects from './components/Projects'
 import Skills from './components/Skills'
 import Education from './components/Education'
@@ -57,6 +58,8 @@ export default function App() {
         <Research />
         <div className="divider" />
         <OpenSource />
+        <div className="divider" />
+        <GitHubStats />
         <div className="divider" />
         <Projects />
         <div className="divider" />

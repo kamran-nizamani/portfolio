@@ -3,12 +3,18 @@ import { motion } from 'framer-motion'
 
 const MESSAGES = [
   { at: 0,  text: 'initializing kamran.dev' },
-  { at: 14, text: 'compiling components' },
-  { at: 30, text: 'loading AI engine modules' },
-  { at: 48, text: 'rendering 3D environment' },
-  { at: 64, text: 'optimizing assets & animations' },
-  { at: 80, text: 'establishing secure connection' },
-  { at: 93, text: 'finalizing render pipeline' },
+  { at: 8,  text: 'connecting to GitHub API' },
+  { at: 16, text: 'compiling components' },
+  { at: 24, text: 'loading AI engine modules' },
+  { at: 32, text: 'fetching live contribution stats' },
+  { at: 40, text: 'rendering 3D environment' },
+  { at: 48, text: 'syncing project repositories' },
+  { at: 56, text: 'optimizing assets & animations' },
+  { at: 64, text: 'calibrating world clock timezones' },
+  { at: 72, text: 'establishing secure connection' },
+  { at: 80, text: 'warming up animations' },
+  { at: 88, text: 'finalizing render pipeline' },
+  { at: 95, text: 'polishing pixels' },
   { at: 100, text: 'ready — welcome' },
 ]
 
