@@ -61,14 +61,15 @@ function ProfileImage() {
             border: '1px solid rgba(0,229,255,0.12)',
           }}
         >
-          {/* Profile photo — swap /profile.jpg for your own image */}
+          {/* Profile photo — swap /profile.png for your own image */}
           {imgOk && (
             <img
-              src="/profile.jpg"
+              src="/profile.png"
               alt="Kamran Khan — AI & Full-Stack Developer"
               loading="lazy"
               decoding="async"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover"
+              style={{ objectPosition: 'top center' }}
               onError={() => setImgOk(false)}
             />
           )}
