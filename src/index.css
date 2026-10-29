@@ -319,3 +319,8 @@
 .flip-card-face--back {
   transform: rotateY(180deg);
 }
+
+/* Respect users who prefer reduced motion: stop decorative infinite animations */
+@media (prefers-reduced-motion: reduce) {
+  .profile-ring, .profile-glow, .pulse-dot { animation: none !important; }
+}

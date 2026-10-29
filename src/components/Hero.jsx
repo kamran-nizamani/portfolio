@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion'
 import { Icon } from '@iconify/react'
 import { useTypewriter } from '../hooks/useTypewriter'
 import { useIsMobile } from '../hooks/useIsMobile'
@@ -11,25 +11,32 @@ function scrollTo(id) {
 /* ─── Circular Profile Image ────────────────────────────────────────── */
 function ProfileImage() {
   const wrapRef  = useRef(null)
-  const [tilt, setTilt]     = useState({ x: 0, y: 0 })
+  const reduce   = useReducedMotion()
   const [imgOk, setImgOk]   = useState(true)
 
-  const onMouseMove = useCallback((e) => {
-    if (!wrapRef.current) return
+  // Tilt lives in spring-smoothed motion values: no React re-render per pointer move.
+  const rawX = useMotionValue(0)
+  const rawY = useMotionValue(0)
+  const rotateX = useSpring(rawX, { stiffness: 280, damping: 22 })
+  const rotateY = useSpring(rawY, { stiffness: 280, damping: 22 })
+
+  // Pointer events cover mouse, pen and touch (finger drag over the photo).
+  const onPointerMove = useCallback((e) => {
+    if (reduce || !wrapRef.current) return
     const r  = wrapRef.current.getBoundingClientRect()
     const cx = r.left + r.width  / 2
     const cy = r.top  + r.height / 2
-    const rx = -((e.clientY - cy) / (r.height / 2)) * 9   // tilt up/down
-    const ry =  ((e.clientX - cx) / (r.width  / 2)) * 9   // tilt left/right
-    setTilt({ x: rx, y: ry })
-  }, [])
+    const clamp = (v) => Math.max(-1, Math.min(1, v))
+    rawX.set(-clamp((e.clientY - cy) / (r.height / 2)) * 9)   // tilt up/down
+    rawY.set( clamp((e.clientX - cx) / (r.width  / 2)) * 9)   // tilt left/right
+  }, [reduce, rawX, rawY])
 
-  const onMouseLeave = useCallback(() => setTilt({ x: 0, y: 0 }), [])
+  const onPointerLeave = useCallback(() => { rawX.set(0); rawY.set(0) }, [rawX, rawY])
 
   return (
-    /* Outer wrapper — controls float animation */
+    /* Outer wrapper — controls float animation (off for reduced-motion users) */
     <motion.div
-      animate={{ y: [0, -16, 0] }}
+      animate={reduce ? undefined : { y: [0, -16, 0] }}
       transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
       /* sizing: responsive via Tailwind */
       className="relative w-[260px] h-[260px] sm:w-[300px] sm:h-[300px] md:w-[360px] md:h-[360px] lg:w-[410px] lg:h-[410px] xl:w-[440px] xl:h-[440px]"
@@ -41,11 +48,12 @@ function ProfileImage() {
       {/* Inner wrapper — controls mouse tilt */}
       <motion.div
         ref={wrapRef}
-        onMouseMove={onMouseMove}
-        onMouseLeave={onMouseLeave}
-        animate={{ rotateX: tilt.x, rotateY: tilt.y }}
-        transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-        style={{ transformStyle: 'preserve-3d', width: '100%', height: '100%', position: 'relative' }}
+        onPointerMove={onPointerMove}
+        onPointerLeave={onPointerLeave}
+        onPointerCancel={onPointerLeave}
+        onPointerUp={onPointerLeave}
+        whileHover={reduce ? undefined : { scale: 1.02 }}
+        style={{ rotateX, rotateY, transformStyle: 'preserve-3d', width: '100%', height: '100%', position: 'relative' }}
       >
         {/* Spinning gradient border ring */}
         <div className="profile-ring" aria-hidden="true" />
@@ -138,6 +146,7 @@ export default function Hero() {
     // banding. three.js is also dynamically imported so mobile never
     // downloads/parses its ~117KB gzipped bundle, keeping Lighthouse high.
     if (!canvas || isMobile) return
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     let cancelled = false
     let cleanup = () => {}
@@ -209,7 +218,8 @@ export default function Hero() {
       const onMove = e => { tx=(e.clientX/window.innerWidth-.5)*2; ty=(e.clientY/window.innerHeight-.5)*2 }
       window.addEventListener('mousemove', onMove, { passive: true })
 
-      let animId
+      let animId = 0
+      let visible = true
       const animate = () => {
         animId = requestAnimationFrame(animate)
         mx+=(tx-mx)*0.04; my+=(ty-my)*0.04
@@ -221,7 +231,15 @@ export default function Hero() {
         ico.rotation.y   = t*0.4 +mx*0.5
         renderer.render(scene, camera)
       }
-      animate()
+      // Run the loop only while the hero is on screen and the tab is visible.
+      const start = () => { if (!animId && visible && !document.hidden) animate() }
+      const stop  = () => { cancelAnimationFrame(animId); animId = 0 }
+      const io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; visible ? start() : stop() })
+      io.observe(canvas)
+      const onVis = () => (document.hidden ? stop() : start())
+      document.addEventListener('visibilitychange', onVis)
+      if (reduceMotion) renderer.render(scene, camera)   // static frame, no loop
+      else start()
 
       const onResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight
@@ -231,9 +249,14 @@ export default function Hero() {
       window.addEventListener('resize', onResize)
 
       cleanup = () => {
-        cancelAnimationFrame(animId)
+        stop()
+        io.disconnect()
+        document.removeEventListener('visibilitychange', onVis)
         window.removeEventListener('mousemove', onMove)
         window.removeEventListener('resize', onResize)
+        torus.geometry.dispose(); torus.material.dispose()
+        ico.geometry.dispose();   ico.material.dispose()
+        geo.dispose(); mat.dispose()
         renderer.dispose()
       }
     })
