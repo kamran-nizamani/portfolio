@@ -65,7 +65,7 @@ export default function Navbar() {
         </button>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
+        <nav className="hidden lg:flex items-center gap-8" aria-label="Main navigation">
           {LINKS.map(({ href, label }) => (
             <button
               key={href}
@@ -99,7 +99,7 @@ export default function Navbar() {
             Hire Me <Icon icon="lucide:arrow-right" className="text-sm" />
           </motion.button>
           <button
-            className="md:hidden text-slate-300 hover:text-white p-2 rounded-lg transition-colors"
+            className="lg:hidden text-slate-300 hover:text-white p-2 rounded-lg transition-colors"
             onClick={() => setOpen(o => !o)}
             aria-label="Toggle menu"
             aria-expanded={open}
@@ -117,7 +117,7 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden glass-dark overflow-hidden border-t border-white/5"
+            className="lg:hidden glass-dark overflow-hidden border-t border-white/5"
           >
             <nav className="px-6 py-6 flex flex-col gap-1" aria-label="Mobile navigation">
               {LINKS.map(({ href, label }) => (

@@ -1,225 +1,181 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
-const MESSAGES = [
-  { at: 0,  text: 'initializing kamran.dev' },
-  { at: 8,  text: 'connecting to GitHub API' },
-  { at: 16, text: 'compiling components' },
-  { at: 24, text: 'loading AI engine modules' },
-  { at: 32, text: 'fetching live contribution stats' },
-  { at: 40, text: 'rendering 3D environment' },
-  { at: 48, text: 'syncing project repositories' },
-  { at: 56, text: 'optimizing assets & animations' },
-  { at: 64, text: 'calibrating world clock timezones' },
-  { at: 72, text: 'establishing secure connection' },
-  { at: 80, text: 'warming up animations' },
-  { at: 88, text: 'finalizing render pipeline' },
-  { at: 95, text: 'polishing pixels' },
-  { at: 100, text: 'ready — welcome' },
-]
+const BG = '#0f172a'
+const NAME = 'KAMRAN KHAN'
+const RING_R = 54
+const RING_C = 2 * Math.PI * RING_R
 
-function currentMessage(progress) {
-  let m = MESSAGES[0]
-  for (const msg of MESSAGES) {
-    if (progress >= msg.at) m = msg
-  }
-  return m.text
-}
-
-function useParticles(count = 34) {
-  return useMemo(
-    () =>
-      Array.from({ length: count }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        size: Math.random() * 2.5 + 1,
-        duration: Math.random() * 6 + 5,
-        delay: Math.random() * 5,
-        drift: (Math.random() - 0.5) * 60,
-      })),
-    [count]
-  )
-}
-
+// Short, honest loader: a fixed ~2.4s intro (it never fakes work), then a split-curtain reveal.
 export default function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0)
   const [canSkip, setCanSkip] = useState(false)
-  const [finishing, setFinishing] = useState(false)
-  const rafRef = useRef(null)
-  const startRef = useRef(null)
+  const [leaving, setLeaving] = useState(false)
+  const rafRef = useRef(0)
   const doneRef = useRef(false)
-  const particles = useParticles()
 
-  const reducedMotion = useMemo(
+  const reduced = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
     []
   )
-  const duration = reducedMotion ? 1200 : 15000
+  const duration = reduced ? 500 : 2400
+
+  const leave = () => {
+    if (doneRef.current) return
+    doneRef.current = true
+    cancelAnimationFrame(rafRef.current)
+    setProgress(100)
+    setLeaving(true)
+    setTimeout(() => onComplete?.(), reduced ? 150 : 850)
+  }
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-
-    const finish = () => {
-      if (doneRef.current) return
-      doneRef.current = true
-      cancelAnimationFrame(rafRef.current)
-      setProgress(100)
-      setFinishing(true)
-      setTimeout(() => onComplete?.(), 550)
-    }
-
+    let start = null
     const tick = (now) => {
-      if (startRef.current === null) startRef.current = now
-      const elapsed = now - startRef.current
-      const frac = Math.min(1, elapsed / duration)
-      const eased = 1 - Math.pow(1 - frac, 3)
-      setProgress(Math.round(eased * 100))
-      if (frac >= 1) {
-        finish()
-        return
-      }
-      rafRef.current = requestAnimationFrame(tick)
+      if (start === null) start = now
+      const frac = Math.min(1, (now - start) / duration)
+      setProgress(Math.round((1 - Math.pow(1 - frac, 3)) * 100))
+      if (frac < 1) rafRef.current = requestAnimationFrame(tick)
+      else if (document.readyState === 'complete') leave()
+      else window.addEventListener('load', leave, { once: true })
     }
     rafRef.current = requestAnimationFrame(tick)
-
-    const skipTimer = setTimeout(() => setCanSkip(true), 2000)
-
+    const skipTimer = setTimeout(() => setCanSkip(true), 700)
     return () => {
       cancelAnimationFrame(rafRef.current)
       clearTimeout(skipTimer)
+      window.removeEventListener('load', leave)
       document.body.style.overflow = ''
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration])
 
-  const handleSkip = () => {
-    if (doneRef.current) return
-    doneRef.current = true
-    cancelAnimationFrame(rafRef.current)
-    setProgress(100)
-    setFinishing(true)
-    setTimeout(() => onComplete?.(), 400)
-  }
+  const ease = [0.76, 0, 0.24, 1]
+  const curtain = { duration: 0.75, ease }
 
   return (
     <motion.div
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.04, filter: 'blur(8px)' }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
-      style={{ background: '#0f172a' }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[9999] overflow-hidden"
       role="status"
       aria-live="polite"
       aria-label="Loading portfolio"
     >
-      {/* Background gradient wash */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse at 50% 40%, rgba(6,182,212,0.12) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(129,140,248,0.08) 0%, transparent 55%)',
-        }}
+      {/* Split curtain: two halves that slide away on exit */}
+      <motion.div
+        className="absolute left-0 top-0 w-full h-1/2"
+        style={{ background: BG }}
+        animate={{ y: leaving && !reduced ? '-100%' : 0 }}
+        transition={curtain}
         aria-hidden="true"
       />
-
-      {/* Particle field */}
-      {!reducedMotion && (
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-          {particles.map((p) => (
-            <motion.span
-              key={p.id}
-              className="absolute rounded-full"
-              style={{
-                left: `${p.left}%`,
-                bottom: '-10px',
-                width: p.size,
-                height: p.size,
-                background: '#06B6D4',
-                boxShadow: '0 0 6px rgba(6,182,212,0.8)',
-              }}
-              initial={{ y: 0, opacity: 0 }}
-              animate={{ y: '-100vh', x: p.drift, opacity: [0, 0.7, 0] }}
-              transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'linear' }}
-            />
-          ))}
-        </div>
+      <motion.div
+        className="absolute left-0 bottom-0 w-full h-1/2"
+        style={{ background: BG }}
+        animate={{ y: leaving && !reduced ? '100%' : 0 }}
+        transition={curtain}
+        aria-hidden="true"
+      />
+      {reduced && (
+        <motion.div
+          className="absolute inset-0"
+          style={{ background: BG }}
+          animate={{ opacity: leaving ? 0 : 1 }}
+          transition={{ duration: 0.15 }}
+          aria-hidden="true"
+        />
       )}
 
-      {/* Faint grid */}
-      <div
-        className="absolute inset-0 opacity-[0.05]"
+      {/* Soft theme glow */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{ opacity: leaving ? 0 : 1 }}
+        transition={{ duration: 0.3 }}
         style={{
-          backgroundImage:
-            'linear-gradient(rgba(148,163,184,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.6) 1px, transparent 1px)',
-          backgroundSize: '42px 42px',
+          background:
+            'radial-gradient(ellipse at 50% 45%, rgba(6,182,212,0.14) 0%, transparent 55%), radial-gradient(ellipse at 80% 85%, rgba(129,140,248,0.10) 0%, transparent 50%)',
         }}
         aria-hidden="true"
       />
 
-      {/* Center content */}
-      <div className="relative z-10 flex flex-col items-center px-6 w-full max-w-sm">
-        {/* Logo */}
-        <motion.div
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-24 h-24 mb-8"
-        >
-          <div className="profile-ring" style={{ animationDuration: '3s' }} aria-hidden="true" />
-          <div
-            className="absolute rounded-full flex items-center justify-center"
-            style={{
-              inset: '4px',
-              background: 'rgba(15,23,42,0.7)',
-              backdropFilter: 'blur(6px)',
-              border: '1px solid rgba(0,229,255,0.15)',
-            }}
-          >
-            <span
-              className="font-display font-bold text-gradient text-3xl select-none"
-              style={{ textShadow: '0 0 30px rgba(0,229,255,0.5)' }}
-            >
-              KK
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Percentage */}
-        <div className="font-display text-5xl sm:text-6xl font-semibold text-white tabular-nums mb-2" aria-hidden="true">
-          {progress}
-          <span className="text-brand text-3xl align-top">%</span>
-        </div>
-
-        {/* Progress bar */}
-        <div
-          className="w-full h-1 rounded-full overflow-hidden mb-5"
-          style={{ background: 'rgba(148,163,184,0.1)' }}
-        >
+      {/* Content */}
+      <motion.div
+        className="relative z-10 h-full flex flex-col items-center justify-center px-6"
+        animate={{ opacity: leaving ? 0 : 1, y: leaving ? -12 : 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {/* Monogram with progress ring */}
+        <div className="relative w-28 h-28 sm:w-32 sm:h-32 mb-8">
+          <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full -rotate-90" aria-hidden="true">
+            <defs>
+              <linearGradient id="ld-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#06B6D4" />
+                <stop offset="100%" stopColor="#818cf8" />
+              </linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r={RING_R} fill="none" stroke="rgba(148,163,184,0.12)" strokeWidth="2" />
+            <circle
+              cx="60" cy="60" r={RING_R} fill="none" stroke="url(#ld-grad)" strokeWidth="2.5" strokeLinecap="round"
+              strokeDasharray={RING_C}
+              strokeDashoffset={RING_C * (1 - progress / 100)}
+              style={{ filter: 'drop-shadow(0 0 6px rgba(6,182,212,0.6))' }}
+            />
+          </svg>
           <motion.div
-            className="h-full rounded-full"
-            style={{
-              width: `${progress}%`,
-              background: 'linear-gradient(to right, #06B6D4, #818cf8)',
-              boxShadow: '0 0 12px rgba(6,182,212,0.6)',
-            }}
-          />
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute inset-3 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(0,229,255,0.12)' }}
+          >
+            <span className="font-display font-bold text-gradient text-3xl sm:text-4xl select-none">KK</span>
+          </motion.div>
         </div>
 
-        {/* Terminal status line */}
-        <div className="font-mono text-xs sm:text-[13px] text-slate-400 h-5 flex items-center gap-1.5">
-          <span className="text-brand">$</span>
-          <span className="typing-cursor">{currentMessage(progress)}</span>
-        </div>
-      </div>
+        {/* Name, revealed letter by letter */}
+        <h1
+          className="font-display font-semibold text-white tracking-[0.18em] text-xl sm:text-2xl flex"
+          aria-label="Kamran Khan"
+        >
+          {NAME.split('').map((ch, i) => (
+            <motion.span
+              key={i}
+              aria-hidden="true"
+              initial={reduced ? false : { opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 + i * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className={ch === ' ' ? 'w-3 sm:w-4' : ''}
+            >
+              {ch}
+            </motion.span>
+          ))}
+        </h1>
 
-      {/* Skip button */}
-      {canSkip && !finishing && (
+        <motion.p
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.6 }}
+          className="mt-3 font-mono text-[11px] sm:text-xs tracking-[0.25em] uppercase text-slate-400 text-center"
+        >
+          AI &amp; Full-Stack Developer
+        </motion.p>
+
+        {/* Counter */}
+        <div className="mt-10 font-mono text-xs text-slate-500 tabular-nums tracking-widest" aria-hidden="true">
+          {String(progress).padStart(3, '0')}
+          <span className="text-brand">%</span>
+        </div>
+      </motion.div>
+
+      {/* Skip */}
+      {canSkip && !leaving && (
         <motion.button
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          onClick={handleSkip}
-          className="absolute bottom-8 right-8 font-mono text-[11px] tracking-widest uppercase text-slate-500 hover:text-brand transition-colors px-4 py-2 rounded-full"
+          onClick={leave}
+          className="absolute z-20 bottom-6 right-6 sm:bottom-8 sm:right-8 font-mono text-[11px] tracking-widest uppercase text-slate-500 hover:text-brand focus-visible:text-brand transition-colors px-4 py-2.5 rounded-full"
           style={{ border: '1px solid rgba(148,163,184,0.15)' }}
           aria-label="Skip loading animation"
         >
