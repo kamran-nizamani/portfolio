@@ -3,6 +3,7 @@ import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-moti
 import { Icon } from '@iconify/react'
 import { useTypewriter } from '../hooks/useTypewriter'
 import { useIsMobile } from '../hooks/useIsMobile'
+import ProfileCanvas from './ProfileCanvas'
 
 function scrollTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -13,6 +14,8 @@ function ProfileImage() {
   const wrapRef  = useRef(null)
   const reduce   = useReducedMotion()
   const [imgOk, setImgOk]   = useState(true)
+  const [ready3d, setReady3d]   = useState(false)   // 3D canvas has drawn its first frame
+  const [failed3d, setFailed3d] = useState(false)   // WebGL unavailable / failed -> plain <img>
 
   // Tilt lives in spring-smoothed motion values: no React re-render per pointer move.
   const rawX = useMotionValue(0)
@@ -77,9 +80,14 @@ function ProfileImage() {
               loading="lazy"
               decoding="async"
               className="w-full h-full object-cover"
-              style={{ objectPosition: 'top center' }}
+              style={{ objectPosition: 'top center', visibility: ready3d ? 'hidden' : 'visible' }}
               onError={() => setImgOk(false)}
             />
+          )}
+
+          {/* 3D depth-parallax version of the same photo; eyes follow the pointer. Skipped for reduced motion. */}
+          {imgOk && !reduce && !failed3d && (
+            <ProfileCanvas onReady={() => setReady3d(true)} onFail={() => { setFailed3d(true); setReady3d(false) }} />
           )}
 
           {/* Fallback: elegant KK monogram shown when no photo exists */}
