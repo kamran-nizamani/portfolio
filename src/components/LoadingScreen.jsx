@@ -3,56 +3,225 @@ import { motion } from 'framer-motion'
 
 const BG = '#0f172a'
 const NAME = 'KAMRAN KHAN'
-const RING_R = 54
-const RING_C = 2 * Math.PI * RING_R
+const DURATION = 3200 // ms of intro before the reveal (never fakes work)
 
-// Short, honest loader: a fixed ~2.4s intro (it never fakes work), then a split-curtain reveal.
+const easeOutExpo = (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t))
+
+/* ─── Particle monogram ──────────────────────────────────────────────────
+   Thousands of particles start scattered on a wide spiral, then converge
+   into the "KK" monogram (targets sampled from real text pixels). The
+   pointer/touch pushes them away, a light sweep runs across once formed,
+   and on exit they burst outward while the curtain splits open.        */
+function ParticleMark({ phase, onProgress }) {
+  const wrapRef = useRef(null)
+  const canvasRef = useRef(null)
+  const phaseRef = useRef(phase)
+  phaseRef.current = phase
+
+  useEffect(() => {
+    const wrap = wrapRef.current
+    const canvas = canvasRef.current
+    if (!wrap || !canvas) return
+    const ctx = canvas.getContext('2d')
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const W = wrap.clientWidth
+    const H = wrap.clientHeight
+    canvas.width = W * dpr
+    canvas.height = H * dpr
+    ctx.scale(dpr, dpr)
+
+    // 1) Sample target points from "KK" rendered in the site's display font.
+    const off = document.createElement('canvas')
+    off.width = W
+    off.height = H
+    const octx = off.getContext('2d', { willReadFrequently: true })
+    const family = getComputedStyle(document.body).fontFamily || 'sans-serif'
+    let size = H * 0.95
+    octx.font = `800 ${size}px ${family}`
+    const tw = octx.measureText('KK').width
+    if (tw > W * 0.96) { size *= (W * 0.96) / tw; octx.font = `800 ${size}px ${family}` }
+    octx.textAlign = 'center'
+    octx.textBaseline = 'middle'
+    octx.fillStyle = '#fff'
+    octx.fillText('KK', W / 2, H / 2 + size * 0.04)
+    const data = octx.getImageData(0, 0, W, H).data
+    const step = W < 300 ? 3 : 3
+    const pts = []
+    for (let y = 0; y < H; y += step) {
+      for (let x = 0; x < W; x += step) {
+        if (data[(y * W + x) * 4 + 3] > 128) pts.push([x + (Math.random() - 0.5) * step, y + (Math.random() - 0.5) * step])
+      }
+    }
+
+    // 2) Particles: start on a wide spiral, ease into their target.
+    const parts = pts.map(([tx, ty]) => {
+      const a = Math.random() * Math.PI * 2
+      const r = Math.max(W, H) * (0.6 + Math.random() * 1.4)
+      return {
+        tx, ty,
+        sx: W / 2 + Math.cos(a) * r,
+        sy: H / 2 + Math.sin(a) * r,
+        a, r,
+        delay: Math.random() * 0.45,
+        x: 0, y: 0, vx: 0, vy: 0,
+        size: 0.9 + Math.random() * 1.1,
+        hue: Math.random(),
+      }
+    })
+
+    const ptr = { x: -9999, y: -9999 }
+    const move = (e) => {
+      const rc = canvas.getBoundingClientRect()
+      const p = e.touches ? e.touches[0] : e
+      ptr.x = p.clientX - rc.left
+      ptr.y = p.clientY - rc.top
+    }
+    const leave = () => { ptr.x = ptr.y = -9999 }
+    window.addEventListener('pointermove', move, { passive: true })
+    window.addEventListener('pointerleave', leave)
+
+    let raf = 0
+    let t0 = null
+    let burstAt = null
+    const ASSEMBLE = 2100
+    const tick = (now) => {
+      if (t0 === null) t0 = now
+      const el = now - t0
+      onProgress?.(Math.min(1, el / DURATION))
+      const bursting = phaseRef.current === 'leaving'
+      if (bursting && burstAt === null) {
+        burstAt = now
+        for (const p of parts) {
+          const ang = Math.atan2(p.y - H / 2, p.x - W / 2) + (Math.random() - 0.5) * 0.6
+          const sp = 5 + Math.random() * 11
+          p.vx = Math.cos(ang) * sp
+          p.vy = Math.sin(ang) * sp
+        }
+      }
+
+      ctx.globalCompositeOperation = 'source-over'
+      ctx.clearRect(0, 0, W, H)
+      ctx.globalCompositeOperation = 'lighter'
+
+      const sweep = ((el - ASSEMBLE) / 900) * (W + 120) - 60 // light sweep after assembly
+      const fade = bursting ? Math.max(0, 1 - (now - burstAt) / 650) : 1
+
+      for (const p of parts) {
+        if (bursting) {
+          p.x += p.vx; p.y += p.vy
+          p.vx *= 0.985; p.vy *= 0.985
+        } else {
+          const k = Math.min(1, Math.max(0, (el / ASSEMBLE - p.delay) / (1 - p.delay)))
+          const e = easeOutExpo(k)
+          const swirl = (1 - e) * 1.6 // spiral unwinds as it converges
+          const ca = Math.cos(swirl), sa = Math.sin(swirl)
+          const dx = p.sx - W / 2, dy = p.sy - H / 2
+          const bx = W / 2 + dx * ca - dy * sa
+          const by = H / 2 + dx * sa + dy * ca
+          let x = bx + (p.tx - bx) * e
+          let y = by + (p.ty - by) * e
+          if (k >= 1) {
+            // settled: gentle breathing + pointer repel with spring-back
+            const dxp = p.x - ptr.x, dyp = p.y - ptr.y
+            const d2 = dxp * dxp + dyp * dyp
+            if (d2 < 4900) {
+              const d = Math.sqrt(d2) || 1
+              const f = (70 - d) / 70
+              p.vx += (dxp / d) * f * 2.2
+              p.vy += (dyp / d) * f * 2.2
+            }
+            p.vx += (p.tx - p.x) * 0.06; p.vy += (p.ty - p.y) * 0.06
+            p.vx *= 0.82; p.vy *= 0.82
+            x = p.x + p.vx; y = p.y + p.vy
+            x += Math.sin(now / 700 + p.a) * 0.15
+          } else { p.vx = p.vy = 0 }
+          p.x = x; p.y = y
+        }
+        const lit = Math.max(0, 1 - Math.abs(p.x - sweep) / 55)
+        const base = 0.55 + lit * 0.45
+        // cyan → indigo along x, matching the site gradient
+        const m = p.x / W
+        const r = Math.round(6 + (129 - 6) * m * (0.6 + p.hue * 0.4))
+        const g = Math.round(182 + (140 - 182) * m)
+        const b = Math.round(212 + (248 - 212) * m)
+        ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(1, base) * fade})`
+        const s = p.size * (1 + lit * 0.9)
+        ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s)
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerleave', leave)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <div ref={wrapRef} className="relative w-[min(78vw,340px)] h-[min(48vw,210px)] sm:w-[460px] sm:h-[270px]">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" aria-hidden="true" />
+    </div>
+  )
+}
+
 export default function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0)
   const [canSkip, setCanSkip] = useState(false)
   const [leaving, setLeaving] = useState(false)
-  const rafRef = useRef(0)
   const doneRef = useRef(false)
+  const gateRef = useRef(false)
 
   const reduced = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
     []
   )
-  const duration = reduced ? 500 : 2400
 
   const leave = () => {
     if (doneRef.current) return
     doneRef.current = true
-    cancelAnimationFrame(rafRef.current)
     setProgress(100)
     setLeaving(true)
-    setTimeout(() => onComplete?.(), reduced ? 150 : 850)
+    setTimeout(() => onComplete?.(), reduced ? 150 : 1000)
+  }
+
+  const onProgress = (f) => {
+    const pct = Math.round((1 - Math.pow(1 - f, 3)) * 100)
+    setProgress((p) => (pct > p ? pct : p))
+    if (f >= 1 && !gateRef.current) {
+      gateRef.current = true
+      if (document.readyState === 'complete') leave()
+      else window.addEventListener('load', leave, { once: true })
+    }
   }
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
+    let raf = 0
     let start = null
-    const tick = (now) => {
-      if (start === null) start = now
-      const frac = Math.min(1, (now - start) / duration)
-      setProgress(Math.round((1 - Math.pow(1 - frac, 3)) * 100))
-      if (frac < 1) rafRef.current = requestAnimationFrame(tick)
-      else if (document.readyState === 'complete') leave()
-      else window.addEventListener('load', leave, { once: true })
+    if (reduced) {
+      // Reduced motion: no particles, a short static intro.
+      const tick = (now) => {
+        if (start === null) start = now
+        const f = Math.min(1, (now - start) / 500)
+        onProgress(f)
+        if (f < 1) raf = requestAnimationFrame(tick)
+      }
+      raf = requestAnimationFrame(tick)
     }
-    rafRef.current = requestAnimationFrame(tick)
     const skipTimer = setTimeout(() => setCanSkip(true), 700)
     return () => {
-      cancelAnimationFrame(rafRef.current)
+      cancelAnimationFrame(raf)
       clearTimeout(skipTimer)
       window.removeEventListener('load', leave)
       document.body.style.overflow = ''
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duration])
+  }, [])
 
-  const ease = [0.76, 0, 0.24, 1]
-  const curtain = { duration: 0.75, ease }
+  const curtain = { duration: 0.8, delay: 0.25, ease: [0.76, 0, 0.24, 1] }
 
   return (
     <motion.div
@@ -63,7 +232,7 @@ export default function LoadingScreen({ onComplete }) {
       aria-live="polite"
       aria-label="Loading portfolio"
     >
-      {/* Split curtain: two halves that slide away on exit */}
+      {/* Split curtain: two halves slide away on exit */}
       <motion.div
         className="absolute left-0 top-0 w-full h-1/2"
         style={{ background: BG }}
@@ -88,64 +257,55 @@ export default function LoadingScreen({ onComplete }) {
         />
       )}
 
-      {/* Soft theme glow */}
+      {/* Theme glow + faint grid (same palette as the site) */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         animate={{ opacity: leaving ? 0 : 1 }}
-        transition={{ duration: 0.3 }}
-        style={{
-          background:
-            'radial-gradient(ellipse at 50% 45%, rgba(6,182,212,0.14) 0%, transparent 55%), radial-gradient(ellipse at 80% 85%, rgba(129,140,248,0.10) 0%, transparent 50%)',
-        }}
+        transition={{ duration: 0.4 }}
         aria-hidden="true"
-      />
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse at 50% 42%, rgba(6,182,212,0.16) 0%, transparent 55%), radial-gradient(ellipse at 85% 90%, rgba(129,140,248,0.10) 0%, transparent 50%)',
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-[0.045]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(148,163,184,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.6) 1px, transparent 1px)',
+            backgroundSize: '44px 44px',
+            maskImage: 'radial-gradient(ellipse at center, #000 20%, transparent 70%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, #000 20%, transparent 70%)',
+          }}
+        />
+      </motion.div>
 
       {/* Content */}
       <motion.div
         className="relative z-10 h-full flex flex-col items-center justify-center px-6"
-        animate={{ opacity: leaving ? 0 : 1, y: leaving ? -12 : 0 }}
-        transition={{ duration: 0.3 }}
+        animate={{ opacity: leaving ? 0 : 1, scale: leaving ? 1.06 : 1 }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
       >
-        {/* Monogram with progress ring */}
-        <div className="relative w-28 h-28 sm:w-32 sm:h-32 mb-8">
-          <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full -rotate-90" aria-hidden="true">
-            <defs>
-              <linearGradient id="ld-grad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#06B6D4" />
-                <stop offset="100%" stopColor="#818cf8" />
-              </linearGradient>
-            </defs>
-            <circle cx="60" cy="60" r={RING_R} fill="none" stroke="rgba(148,163,184,0.12)" strokeWidth="2" />
-            <circle
-              cx="60" cy="60" r={RING_R} fill="none" stroke="url(#ld-grad)" strokeWidth="2.5" strokeLinecap="round"
-              strokeDasharray={RING_C}
-              strokeDashoffset={RING_C * (1 - progress / 100)}
-              style={{ filter: 'drop-shadow(0 0 6px rgba(6,182,212,0.6))' }}
-            />
-          </svg>
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute inset-3 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(0,229,255,0.12)' }}
-          >
-            <span className="font-display font-bold text-gradient text-3xl sm:text-4xl select-none">KK</span>
-          </motion.div>
-        </div>
+        {reduced ? (
+          <div className="font-display font-bold text-gradient text-7xl select-none h-[210px] flex items-center">KK</div>
+        ) : (
+          <ParticleMark phase={leaving ? 'leaving' : 'intro'} onProgress={onProgress} />
+        )}
 
-        {/* Name, revealed letter by letter */}
         <h1
-          className="font-display font-semibold text-white tracking-[0.18em] text-xl sm:text-2xl flex"
+          className="mt-6 font-display font-semibold text-white tracking-[0.18em] text-lg sm:text-2xl flex"
           aria-label="Kamran Khan"
         >
           {NAME.split('').map((ch, i) => (
             <motion.span
               key={i}
               aria-hidden="true"
-              initial={reduced ? false : { opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 + i * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              initial={reduced ? false : { opacity: 0, y: 14, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ delay: 1.7 + i * 0.05, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
               className={ch === ' ' ? 'w-3 sm:w-4' : ''}
             >
               {ch}
@@ -156,16 +316,28 @@ export default function LoadingScreen({ onComplete }) {
         <motion.p
           initial={reduced ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.6 }}
-          className="mt-3 font-mono text-[11px] sm:text-xs tracking-[0.25em] uppercase text-slate-400 text-center"
+          transition={{ delay: 2.4, duration: 0.6 }}
+          className="mt-3 font-mono text-[10px] sm:text-xs tracking-[0.25em] uppercase text-slate-400 text-center"
         >
           AI &amp; Full-Stack Developer
         </motion.p>
 
-        {/* Counter */}
-        <div className="mt-10 font-mono text-xs text-slate-500 tabular-nums tracking-widest" aria-hidden="true">
-          {String(progress).padStart(3, '0')}
-          <span className="text-brand">%</span>
+        {/* Thin progress line + counter */}
+        <div className="mt-9 w-48 sm:w-60" aria-hidden="true">
+          <div className="h-px w-full" style={{ background: 'rgba(148,163,184,0.15)' }}>
+            <div
+              className="h-px"
+              style={{
+                width: `${progress}%`,
+                background: 'linear-gradient(to right, #06B6D4, #818cf8)',
+                boxShadow: '0 0 10px rgba(6,182,212,0.7)',
+              }}
+            />
+          </div>
+          <div className="mt-3 text-center font-mono text-[11px] text-slate-500 tabular-nums tracking-widest">
+            {String(progress).padStart(3, '0')}
+            <span className="text-brand">%</span>
+          </div>
         </div>
       </motion.div>
 
