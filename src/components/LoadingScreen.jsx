@@ -3,7 +3,18 @@ import { motion } from 'framer-motion'
 
 const BG = '#0f172a'
 const NAME = 'KAMRAN KHAN'
-const DURATION = 3200 // ms of intro before the reveal (never fakes work)
+const DURATION = 15000 // ms of intro before the reveal (Skip is always available)
+// The particle cloud morphs through these marks, one per act (3s each).
+const SHAPES = ['KK', '</>', 'AI', '{ }', 'KK']
+const STAGE_MS = DURATION / SHAPES.length
+// Real titles from the site (same ones as the hero typewriter).
+const LABELS = [
+  'AI & Full-Stack Developer',
+  'Full Stack Developer',
+  'AI Engineer',
+  'Cybersecurity Researcher',
+  'Python · React · Node.js',
+]
 
 const easeOutExpo = (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t))
 
@@ -12,7 +23,7 @@ const easeOutExpo = (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t))
    into the "KK" monogram (targets sampled from real text pixels). The
    pointer/touch pushes them away, a light sweep runs across once formed,
    and on exit they burst outward while the curtain splits open.        */
-function ParticleMark({ phase, onProgress }) {
+function ParticleMark({ phase, onProgress, onStage }) {
   const wrapRef = useRef(null)
   const canvasRef = useRef(null)
   const phaseRef = useRef(phase)
@@ -30,42 +41,55 @@ function ParticleMark({ phase, onProgress }) {
     canvas.height = H * dpr
     ctx.scale(dpr, dpr)
 
-    // 1) Sample target points from "KK" rendered in the site's display font.
+    // 1) Sample target points for every shape from real text pixels.
     const off = document.createElement('canvas')
     off.width = W
     off.height = H
     const octx = off.getContext('2d', { willReadFrequently: true })
     const family = getComputedStyle(document.body).fontFamily || 'sans-serif'
-    let size = H * 0.95
-    octx.font = `800 ${size}px ${family}`
-    const tw = octx.measureText('KK').width
-    if (tw > W * 0.96) { size *= (W * 0.96) / tw; octx.font = `800 ${size}px ${family}` }
-    octx.textAlign = 'center'
-    octx.textBaseline = 'middle'
-    octx.fillStyle = '#fff'
-    octx.fillText('KK', W / 2, H / 2 + size * 0.04)
-    const data = octx.getImageData(0, 0, W, H).data
-    const step = W < 300 ? 3 : 3
-    const pts = []
-    for (let y = 0; y < H; y += step) {
-      for (let x = 0; x < W; x += step) {
-        if (data[(y * W + x) * 4 + 3] > 128) pts.push([x + (Math.random() - 0.5) * step, y + (Math.random() - 0.5) * step])
+    const step = 3
+    const sample = (str) => {
+      octx.clearRect(0, 0, W, H)
+      let size = H * 0.95
+      octx.font = `800 ${size}px ${family}`
+      const tw = octx.measureText(str).width
+      if (tw > W * 0.96) { size *= (W * 0.96) / tw; octx.font = `800 ${size}px ${family}` }
+      octx.textAlign = 'center'
+      octx.textBaseline = 'middle'
+      octx.fillStyle = '#fff'
+      octx.fillText(str, W / 2, H / 2 + size * 0.04)
+      const d = octx.getImageData(0, 0, W, H).data
+      const out = []
+      for (let y = 0; y < H; y += step) {
+        for (let x = 0; x < W; x += step) {
+          if (d[(y * W + x) * 4 + 3] > 128) out.push([x + (Math.random() - 0.5) * step, y + (Math.random() - 0.5) * step])
+        }
       }
+      return out
     }
+    const sets = SHAPES.map(sample)
+    const N = Math.min(2600, Math.max(...sets.map((a) => a.length)))
+    // Same particle count for every shape: shuffle, then cycle to length N.
+    const targets = sets.map((arr) => {
+      const a = arr.slice().sort(() => Math.random() - 0.5)
+      return Array.from({ length: N }, (_, i) => a[i % a.length])
+    })
 
-    // 2) Particles: start on a wide spiral, ease into their target.
-    const parts = pts.map(([tx, ty]) => {
+    // 2) Particles: enter on a wide spiral, then morph shape to shape.
+    const parts = Array.from({ length: N }, (_, i) => {
       const a = Math.random() * Math.PI * 2
       const r = Math.max(W, H) * (0.6 + Math.random() * 1.4)
       return {
-        tx, ty,
+        i,
         sx: W / 2 + Math.cos(a) * r,
         sy: H / 2 + Math.sin(a) * r,
-        a, r,
+        a,
         delay: Math.random() * 0.45,
-        x: 0, y: 0, vx: 0, vy: 0,
+        mdelay: Math.random() * 380, // stagger so each morph ripples
+        x: W / 2, y: H / 2, vx: 0, vy: 0,
         size: 0.9 + Math.random() * 1.1,
         hue: Math.random(),
+        stage: 0,
       }
     })
 
@@ -83,11 +107,26 @@ function ParticleMark({ phase, onProgress }) {
     let raf = 0
     let t0 = null
     let burstAt = null
+    let lastStage = -1
     const ASSEMBLE = 2100
     const tick = (now) => {
       if (t0 === null) t0 = now
       const el = now - t0
       onProgress?.(Math.min(1, el / DURATION))
+      const stage = Math.min(SHAPES.length - 1, Math.floor(el / STAGE_MS))
+      if (stage !== lastStage) {
+        lastStage = stage
+        onStage?.(stage)
+        if (stage > 0) {
+          // morph: scatter outward a little, then each particle springs to its new spot
+          for (const p of parts) {
+            const ang = Math.random() * Math.PI * 2
+            const sp = 3 + Math.random() * 6
+            p.vx += Math.cos(ang) * sp
+            p.vy += Math.sin(ang) * sp
+          }
+        }
+      }
       const bursting = phaseRef.current === 'leaving'
       if (bursting && burstAt === null) {
         burstAt = now
@@ -103,50 +142,52 @@ function ParticleMark({ phase, onProgress }) {
       ctx.clearRect(0, 0, W, H)
       ctx.globalCompositeOperation = 'lighter'
 
-      const sweep = ((el - ASSEMBLE) / 900) * (W + 120) - 60 // light sweep after assembly
+      const sinceStage = el - stage * STAGE_MS
+      const sweep = ((sinceStage - 1500) / 900) * (W + 120) - 60 // light sweep late in each act
       const fade = bursting ? Math.max(0, 1 - (now - burstAt) / 650) : 1
 
       for (const p of parts) {
         if (bursting) {
           p.x += p.vx; p.y += p.vy
           p.vx *= 0.985; p.vy *= 0.985
-        } else {
+        } else if (el < ASSEMBLE) {
+          // act 1 entrance: spiral unwinds as particles converge
+          const [tx, ty] = targets[0][p.i]
           const k = Math.min(1, Math.max(0, (el / ASSEMBLE - p.delay) / (1 - p.delay)))
           const e = easeOutExpo(k)
-          const swirl = (1 - e) * 1.6 // spiral unwinds as it converges
+          const swirl = (1 - e) * 1.6
           const ca = Math.cos(swirl), sa = Math.sin(swirl)
           const dx = p.sx - W / 2, dy = p.sy - H / 2
           const bx = W / 2 + dx * ca - dy * sa
           const by = H / 2 + dx * sa + dy * ca
-          let x = bx + (p.tx - bx) * e
-          let y = by + (p.ty - by) * e
-          if (k >= 1) {
-            // settled: gentle breathing + pointer repel with spring-back
-            const dxp = p.x - ptr.x, dyp = p.y - ptr.y
-            const d2 = dxp * dxp + dyp * dyp
-            if (d2 < 4900) {
-              const d = Math.sqrt(d2) || 1
-              const f = (70 - d) / 70
-              p.vx += (dxp / d) * f * 2.2
-              p.vy += (dyp / d) * f * 2.2
-            }
-            p.vx += (p.tx - p.x) * 0.06; p.vy += (p.ty - p.y) * 0.06
-            p.vx *= 0.82; p.vy *= 0.82
-            x = p.x + p.vx; y = p.y + p.vy
-            x += Math.sin(now / 700 + p.a) * 0.15
-          } else { p.vx = p.vy = 0 }
-          p.x = x; p.y = y
+          p.x = bx + (tx - bx) * e
+          p.y = by + (ty - by) * e
+        } else {
+          // settled / morphing: spring to current shape, staggered, with pointer repel
+          const [tx, ty] = targets[stage][p.i]
+          const active = el - ASSEMBLE > 0 && (stage === 0 || sinceStage > p.mdelay)
+          if (active) { p.vx += (tx - p.x) * 0.045; p.vy += (ty - p.y) * 0.045 }
+          const dxp = p.x - ptr.x, dyp = p.y - ptr.y
+          const d2 = dxp * dxp + dyp * dyp
+          if (d2 < 4900) {
+            const d = Math.sqrt(d2) || 1
+            const f = (70 - d) / 70
+            p.vx += (dxp / d) * f * 2.2
+            p.vy += (dyp / d) * f * 2.2
+          }
+          p.vx *= 0.84; p.vy *= 0.84
+          p.x += p.vx + Math.sin(now / 700 + p.a) * 0.12
+          p.y += p.vy
         }
         const lit = Math.max(0, 1 - Math.abs(p.x - sweep) / 55)
         const base = 0.55 + lit * 0.45
-        // cyan → indigo along x, matching the site gradient
-        const m = p.x / W
+        const m = Math.min(1, Math.max(0, p.x / W))
         const r = Math.round(6 + (129 - 6) * m * (0.6 + p.hue * 0.4))
         const g = Math.round(182 + (140 - 182) * m)
         const b = Math.round(212 + (248 - 212) * m)
         ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(1, base) * fade})`
-        const s = p.size * (1 + lit * 0.9)
-        ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s)
+        const sz = p.size * (1 + lit * 0.9)
+        ctx.fillRect(p.x - sz / 2, p.y - sz / 2, sz, sz)
       }
       raf = requestAnimationFrame(tick)
     }
@@ -171,6 +212,7 @@ export default function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0)
   const [canSkip, setCanSkip] = useState(false)
   const [leaving, setLeaving] = useState(false)
+  const [stage, setStage] = useState(0)
   const doneRef = useRef(false)
   const gateRef = useRef(false)
 
@@ -188,7 +230,7 @@ export default function LoadingScreen({ onComplete }) {
   }
 
   const onProgress = (f) => {
-    const pct = Math.round((1 - Math.pow(1 - f, 3)) * 100)
+    const pct = Math.round(f * 100)
     setProgress((p) => (pct > p ? pct : p))
     if (f >= 1 && !gateRef.current) {
       gateRef.current = true
@@ -292,7 +334,7 @@ export default function LoadingScreen({ onComplete }) {
         {reduced ? (
           <div className="font-display font-bold text-gradient text-7xl select-none h-[210px] flex items-center">KK</div>
         ) : (
-          <ParticleMark phase={leaving ? 'leaving' : 'intro'} onProgress={onProgress} />
+          <ParticleMark phase={leaving ? 'leaving' : 'intro'} onProgress={onProgress} onStage={setStage} />
         )}
 
         <h1
@@ -313,14 +355,17 @@ export default function LoadingScreen({ onComplete }) {
           ))}
         </h1>
 
-        <motion.p
-          initial={reduced ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.4, duration: 0.6 }}
-          className="mt-3 font-mono text-[10px] sm:text-xs tracking-[0.25em] uppercase text-slate-400 text-center"
-        >
-          AI &amp; Full-Stack Developer
-        </motion.p>
+        <div className="mt-3 h-5 relative w-full flex justify-center" aria-hidden="true">
+          <motion.p
+            key={stage}
+            initial={reduced ? false : { opacity: 0, y: 8, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: stage === 0 ? 2.4 : 0.5, duration: 0.6 }}
+            className="absolute font-mono text-[10px] sm:text-xs tracking-[0.25em] uppercase text-slate-400 text-center whitespace-nowrap"
+          >
+            {LABELS[stage]}
+          </motion.p>
+        </div>
 
         {/* Thin progress line + counter */}
         <div className="mt-9 w-48 sm:w-60" aria-hidden="true">
