@@ -42,7 +42,7 @@ function ProfileImage() {
       animate={reduce ? undefined : { y: [0, -12, 0] }}
       transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
       /* portrait cut-out, sized responsively (2:3 like the photo) */
-      className="relative w-[220px] h-[330px] sm:w-[250px] sm:h-[375px] md:w-[290px] md:h-[435px] lg:w-[320px] lg:h-[480px] xl:w-[350px] xl:h-[525px]"
+      className="relative aspect-[2/3] h-[min(330px,50vh)] sm:h-[min(375px,50vh)] md:h-[min(435px,50vh)] lg:h-[480px] xl:h-[525px]"
       style={{ perspective: '900px' }}
     >
       {/* Soft ambient glow behind the cut-out (no ring, no circle) */}

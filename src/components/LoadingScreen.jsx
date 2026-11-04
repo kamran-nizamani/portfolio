@@ -202,7 +202,7 @@ function ParticleMark({ phase, onProgress, onStage }) {
   }, [])
 
   return (
-    <div ref={wrapRef} className="relative w-[min(78vw,340px)] h-[min(48vw,210px)] sm:w-[460px] sm:h-[270px]">
+    <div ref={wrapRef} className="relative w-[min(78vw,340px,48vh)] h-[min(48vw,210px,30vh)] sm:w-[min(460px,48vh)] sm:h-[min(270px,30vh)]">
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" aria-hidden="true" />
     </div>
   )
