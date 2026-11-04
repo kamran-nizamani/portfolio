@@ -9,7 +9,7 @@ function scrollTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-/* ─── Circular Profile Image ────────────────────────────────────────── */
+/* ─── Profile Image (cut-out portrait) ────────────────────────────────────────── */
 function ProfileImage() {
   const wrapRef  = useRef(null)
   const reduce   = useReducedMotion()
@@ -37,18 +37,22 @@ function ProfileImage() {
   const onPointerLeave = useCallback(() => { rawX.set(0); rawY.set(0) }, [rawX, rawY])
 
   return (
-    /* Outer wrapper — controls float animation (off for reduced-motion users) */
+    /* Outer wrapper — float animation (off for reduced-motion users) */
     <motion.div
-      animate={reduce ? undefined : { y: [0, -16, 0] }}
+      animate={reduce ? undefined : { y: [0, -12, 0] }}
       transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
-      /* sizing: responsive via Tailwind */
-      className="relative w-[260px] h-[260px] sm:w-[300px] sm:h-[300px] md:w-[360px] md:h-[360px] lg:w-[410px] lg:h-[410px] xl:w-[440px] xl:h-[440px]"
+      /* portrait cut-out, sized responsively (2:3 like the photo) */
+      className="relative w-[220px] h-[330px] sm:w-[250px] sm:h-[375px] md:w-[290px] md:h-[435px] lg:w-[320px] lg:h-[480px] xl:w-[350px] xl:h-[525px]"
       style={{ perspective: '900px' }}
     >
-      {/* Soft outer glow (static, behind everything) */}
-      <div className="profile-glow" aria-hidden="true" />
+      {/* Soft ambient glow behind the cut-out (no ring, no circle) */}
+      <div
+        className="absolute inset-x-[8%] top-[12%] bottom-[6%] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse at 50% 45%, rgba(6,182,212,0.28) 0%, rgba(129,140,248,0.12) 45%, transparent 72%)', filter: 'blur(28px)' }}
+        aria-hidden="true"
+      />
 
-      {/* Inner wrapper — controls mouse tilt */}
+      {/* Inner wrapper — mouse tilt */}
       <motion.div
         ref={wrapRef}
         onPointerMove={onPointerMove}
@@ -58,29 +62,21 @@ function ProfileImage() {
         whileHover={reduce ? undefined : { scale: 1.02 }}
         style={{ rotateX, rotateY, transformStyle: 'preserve-3d', width: '100%', height: '100%', position: 'relative' }}
       >
-        {/* Spinning gradient border ring */}
-        <div className="profile-ring" aria-hidden="true" />
-
-        {/* Glassmorphism frame — sits 3px inside the ring */}
-        <div
-          className="absolute rounded-full overflow-hidden"
-          style={{
-            inset: '3px',
-            background: 'rgba(15,23,42,0.45)',
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
-            border: '1px solid rgba(0,229,255,0.12)',
-          }}
-        >
-          {/* Profile photo — swap /profile.png for your own image */}
+        <div className="absolute inset-0" style={{ filter: 'drop-shadow(0 18px 28px rgba(0,0,0,0.45))' }}>
+          {/* Plain photo: the base layer, and the fallback if 3D can't run. Fades out at the bottom. */}
           {imgOk && (
             <img
               src="/profile.png"
               alt="Kamran Khan — AI & Full-Stack Developer"
-              loading="lazy"
+              loading="eager"
               decoding="async"
-              className="w-full h-full object-cover"
-              style={{ objectPosition: 'top center', visibility: ready3d ? 'hidden' : 'visible' }}
+              className="w-full h-full object-contain"
+              style={{
+                objectPosition: 'top center',
+                visibility: ready3d ? 'hidden' : 'visible',
+                WebkitMaskImage: 'linear-gradient(to bottom, #000 68%, transparent 94%)',
+                maskImage: 'linear-gradient(to bottom, #000 68%, transparent 94%)',
+              }}
               onError={() => setImgOk(false)}
             />
           )}
@@ -90,51 +86,18 @@ function ProfileImage() {
             <ProfileCanvas onReady={() => setReady3d(true)} onFail={() => { setFailed3d(true); setReady3d(false) }} />
           )}
 
-          {/* Fallback: elegant KK monogram shown when no photo exists */}
+          {/* Fallback monogram if the photo itself fails to load */}
           {!imgOk && (
-            <div
-              className="w-full h-full flex flex-col items-center justify-center gap-2"
-              style={{
-                background: 'linear-gradient(135deg, rgba(6,182,212,0.15) 0%, rgba(129,140,248,0.1) 100%)',
-              }}
-              aria-label="Kamran Khan initials"
-            >
+            <div className="w-full h-full flex items-center justify-center">
               <span
                 className="font-display font-bold text-brand leading-none select-none"
-                style={{ fontSize: 'clamp(3rem, 12vw, 6.5rem)', textShadow: '0 0 40px rgba(0,229,255,0.5)' }}
+                style={{ fontSize: 'clamp(4rem, 14vw, 8rem)', textShadow: '0 0 40px rgba(0,229,255,0.5)' }}
               >
                 KK
               </span>
-              <span className="font-mono text-[10px] tracking-[0.25em] text-slate-500 uppercase">
-                kamran.dev
-              </span>
             </div>
           )}
-
-          {/* Subtle inner cyan rim light */}
-          <div
-            className="absolute inset-0 rounded-full pointer-events-none"
-            style={{ boxShadow: 'inset 0 0 40px rgba(0,229,255,0.08)' }}
-            aria-hidden="true"
-          />
         </div>
-
-        {/* Corner accent dots */}
-        {[
-          { top: '8%',  left: '8%'  },
-          { top: '8%',  right: '8%' },
-          { bottom: '8%', left: '8%'  },
-          { bottom: '8%', right: '8%' },
-        ].map((pos, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1.5 h-1.5 rounded-full bg-brand"
-            style={{ ...pos, boxShadow: '0 0 6px rgba(0,229,255,0.8)' }}
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ repeat: Infinity, duration: 2, delay: i * 0.4, ease: 'easeInOut' }}
-            aria-hidden="true"
-          />
-        ))}
       </motion.div>
     </motion.div>
   )

@@ -12,7 +12,7 @@ attribute vec2 p;
 varying vec2 v;
 void main(){ v = vec2(p.x*0.5+0.5, 0.5-p.y*0.5); gl_Position = vec4(p,0.,1.); }`
 
-// Image is 408x612; the frame shows the top 408x408 square (same as object-fit: cover, top).
+// Image is 408x612; the whole portrait is shown, fading out toward the bottom and sides.
 const FRAG = `
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
@@ -29,7 +29,7 @@ float eyeMask(vec2 px, vec2 c){
   return 1.0 - smoothstep(0.55, 1.0, dot(q, q));
 }
 void main(){
-  vec2 uv = vec2(v.x, v.y * (408. / 612.));
+  vec2 uv = v;
   float d = texture2D(dep, uv).r;
   vec2 st = uv - gaze * (d - 0.3) * vec2(0.016, 0.011);       // depth parallax (near parts move more)
   vec2 px = st * SZ;
@@ -40,7 +40,9 @@ void main(){
   float dy = texture2D(dep, uv + vec2(0., 2./612.)).r - texture2D(dep, uv - vec2(0., 2./612.)).r;
   float shade = dot(vec2(dx, dy), gaze) * 0.9;                 // subtle light leaning toward the pointer
   c.rgb *= 1.0 + shade;
-  gl_FragColor = c;
+  // soft fade: bottom (hides the rough cut-out edge) and the left/right edges where the shoulders end
+  float f = smoothstep(0.94, 0.68, v.y) * smoothstep(0.0, 0.07, v.x) * smoothstep(1.0, 0.93, v.x);
+  gl_FragColor = c * f;
 }`
 
 function compile(gl, type, src) {
@@ -183,6 +185,11 @@ export default function ProfileCanvas({ onReady, onFail }) {
       role="img"
       aria-label="Kamran Khan — AI & Full-Stack Developer"
       className="absolute inset-0 w-full h-full"
+      style={{
+        // same soft fade at the bottom as the plain <img>
+        WebkitMaskImage: 'linear-gradient(to bottom, #000 68%, transparent 94%)',
+        maskImage: 'linear-gradient(to bottom, #000 68%, transparent 94%)',
+      }}
     />
   )
 }
