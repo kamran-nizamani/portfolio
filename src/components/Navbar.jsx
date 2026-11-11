@@ -62,7 +62,7 @@ export default function Navbar() {
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center gap-3 group"
-          aria-label="Home"
+          aria-label="kamran.dev, back to top"
         >
           <div
             className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center font-mono font-bold text-lg text-white group-hover:scale-110 transition-transform duration-300"

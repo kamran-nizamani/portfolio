@@ -483,8 +483,8 @@ export default function Projects() {
                       href={p.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-brand transition-colors"
-                      aria-label={`View ${p.title} on GitHub`}
+                      className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-brand transition-colors"
+                      aria-label={`Code for ${p.title} on GitHub`}
                     >
                       <Icon icon="lucide:github" className="text-base" /> Code
                     </motion.a>
@@ -494,8 +494,8 @@ export default function Projects() {
                         href={p.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-brand transition-colors"
-                        aria-label={`Visit ${p.title} live`}
+                        className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-brand transition-colors"
+                        aria-label={`Live demo of ${p.title}`}
                       >
                         <Icon icon="lucide:external-link" className="text-base" /> Live
                       </motion.a>

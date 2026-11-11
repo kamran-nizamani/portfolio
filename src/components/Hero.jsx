@@ -10,7 +10,7 @@ function scrollTo(id) {
 }
 
 /* ─── Profile Image (cut-out portrait) ────────────────────────────────────────── */
-function ProfileImage() {
+function ProfileImage({ ready = true }) {
   const wrapRef  = useRef(null)
   const reduce   = useReducedMotion()
   const [imgOk, setImgOk]   = useState(true)
@@ -82,7 +82,7 @@ function ProfileImage() {
           )}
 
           {/* 3D depth-parallax version of the same photo; eyes follow the pointer. Skipped for reduced motion. */}
-          {imgOk && !reduce && !failed3d && (
+          {ready && imgOk && !reduce && !failed3d && (
             <ProfileCanvas onReady={() => setReady3d(true)} onFail={() => { setFailed3d(true); setReady3d(false) }} />
           )}
 
@@ -104,7 +104,7 @@ function ProfileImage() {
 }
 
 /* ─── Hero Section ──────────────────────────────────────────────────── */
-export default function Hero() {
+export default function Hero({ ready = true }) {
   const canvasRef = useRef(null)
   const typed     = useTypewriter()
   const isMobile  = useIsMobile()
@@ -116,7 +116,8 @@ export default function Hero() {
     // layered under blurred/transformed content, showing up as static-like
     // banding. three.js is also dynamically imported so mobile never
     // downloads/parses its ~117KB gzipped bundle, keeping Lighthouse high.
-    if (!canvas || isMobile) return
+    // Wait for the loader to finish: no point rendering a 3D scene nobody can see (it competed with the loader).
+    if (!canvas || isMobile || !ready) return
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     let cancelled = false
@@ -132,7 +133,7 @@ export default function Hero() {
       cancelled = true
       cleanup()
     }
-  }, [isMobile])
+  }, [isMobile, ready])
 
   return (
     <section
@@ -275,7 +276,7 @@ export default function Hero() {
             transition={{ delay: 0.3, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
             className="flex-shrink-0 flex justify-center"
           >
-            <ProfileImage />
+            <ProfileImage ready={ready} />
           </motion.div>
         </div>
       </div>

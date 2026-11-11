@@ -63,6 +63,8 @@ export default function Skills() {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            role="list"
+            aria-label="Skill levels"
           >
             {SKILLS.map((s, i) => (
               <motion.div

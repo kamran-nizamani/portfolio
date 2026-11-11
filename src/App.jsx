@@ -51,7 +51,7 @@ export default function App() {
       <ScrollProgress />
       <Navbar />
       <main>
-        <Hero />
+        <Hero ready={!showLoader} />
         <div className="divider" />
         <About />
         <div className="divider" />

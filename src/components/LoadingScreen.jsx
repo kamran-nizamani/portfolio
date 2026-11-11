@@ -47,7 +47,8 @@ function ParticleMark({ phase, onProgress, onStage }) {
     off.height = H
     const octx = off.getContext('2d', { willReadFrequently: true })
     const family = getComputedStyle(document.body).fontFamily || 'sans-serif'
-    const step = 3
+    const lite = (navigator.hardwareConcurrency || 4) <= 4 || W < 300
+    const step = lite ? 4 : 3
     const sample = (str) => {
       octx.clearRect(0, 0, W, H)
       let size = H * 0.95
@@ -68,7 +69,7 @@ function ParticleMark({ phase, onProgress, onStage }) {
       return out
     }
     const sets = SHAPES.map(sample)
-    const N = Math.min(2600, Math.max(...sets.map((a) => a.length)))
+    const N = Math.min(lite ? 1400 : 2600, Math.max(...sets.map((a) => a.length)))
     // Same particle count for every shape: shuffle, then cycle to length N.
     const targets = sets.map((arr) => {
       const a = arr.slice().sort(() => Math.random() - 0.5)
