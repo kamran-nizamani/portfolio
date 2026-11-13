@@ -138,7 +138,7 @@ export default function Hero({ ready = true }) {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center overflow-hidden scanline"
+      className="relative lg:min-h-screen flex items-center overflow-hidden scanline"
       aria-label="Hero section"
     >
       {/* Three.js canvas */}
@@ -152,7 +152,7 @@ export default function Hero({ ready = true }) {
       <div className="absolute inset-0 z-[1]" style={{ background: 'rgba(15,23,42,0.35)' }} />
 
       {/* ── Two-column content ── */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-28 lg:py-0">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-28 pb-24 lg:py-0">
         {/*
           DOM order: [text-col, image-col]
           Mobile  (`flex-col-reverse`): image renders on TOP, text below  ✓
